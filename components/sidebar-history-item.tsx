@@ -47,7 +47,7 @@ const PureChatItem = ({
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive}>
         <Link
-          className="group relative flex flex-col justify-center rounded-xl border border-transparent px-3 py-3 my-2 transition-all duration-200 hover:border-rose-200 hover:bg-gradient-to-r hover:from-rose-50 hover:to-rose-100"
+          className="group relative flex flex-col justify-center rounded-xl border border-transparent px-3 py-4 my-3 min-h-[60px] transition-all duration-200 hover:border-rose-200 hover:bg-gradient-to-r hover:from-rose-50 hover:to-rose-100"
           href={`/chat/${chat.id}`}
           onClick={() => setOpenMobile(false)}
         >

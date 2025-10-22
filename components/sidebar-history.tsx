@@ -232,7 +232,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                               setOpenMobile={setOpenMobile}
                             />
                             {index < groupedChats.today.length - 1 && (
-                              <div className="mx-2 my-1 border-t border-slate-100/60"></div>
+                              <div className="mx-2 my-2 border-t border-slate-100/60"></div>
                             )}
                           </div>
                         ))}
@@ -256,7 +256,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                               setOpenMobile={setOpenMobile}
                             />
                             {index < groupedChats.yesterday.length - 1 && (
-                              <div className="mx-2 my-1 border-t border-slate-100/60"></div>
+                              <div className="mx-2 my-2 border-t border-slate-100/60"></div>
                             )}
                           </div>
                         ))}
@@ -280,7 +280,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                               setOpenMobile={setOpenMobile}
                             />
                             {index < groupedChats.lastWeek.length - 1 && (
-                              <div className="mx-2 my-1 border-t border-slate-100/60"></div>
+                              <div className="mx-2 my-2 border-t border-slate-100/60"></div>
                             )}
                           </div>
                         ))}
@@ -304,7 +304,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                               setOpenMobile={setOpenMobile}
                             />
                             {index < groupedChats.lastMonth.length - 1 && (
-                              <div className="mx-2 my-1 border-t border-slate-100/60"></div>
+                              <div className="mx-2 my-2 border-t border-slate-100/60"></div>
                             )}
                           </div>
                         ))}
@@ -328,7 +328,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                               setOpenMobile={setOpenMobile}
                             />
                             {index < groupedChats.older.length - 1 && (
-                              <div className="mx-2 my-1 border-t border-slate-100/60"></div>
+                              <div className="mx-2 my-2 border-t border-slate-100/60"></div>
                             )}
                           </div>
                         ))}
