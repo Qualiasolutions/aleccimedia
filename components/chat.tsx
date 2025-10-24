@@ -48,6 +48,7 @@ export function Chat({
   isReadonly,
   autoResume,
   initialLastContext,
+  initialBotType = "alexandria",
 }: {
   id: string;
   initialMessages: ChatMessage[];
@@ -56,6 +57,7 @@ export function Chat({
   isReadonly: boolean;
   autoResume: boolean;
   initialLastContext?: AppUsage;
+  initialBotType?: BotType;
 }) {
   const router = useRouter();
   const { open } = useSidebar();
@@ -72,9 +74,9 @@ export function Chat({
   const [usage, setUsage] = useState<AppUsage | undefined>(initialLastContext);
   const [showCreditCardAlert, setShowCreditCardAlert] = useState(false);
   const [currentModelId, setCurrentModelId] = useState(initialChatModel);
-  const [selectedBot, setSelectedBot] = useState<BotType>("alexandria");
+  const [selectedBot, setSelectedBot] = useState<BotType>(initialBotType);
   const currentModelIdRef = useRef(currentModelId);
-  const selectedBotRef = useRef(selectedBot);
+  const selectedBotRef = useRef(initialBotType);
 
   useEffect(() => {
     currentModelIdRef.current = currentModelId;

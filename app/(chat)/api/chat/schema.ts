@@ -1,5 +1,4 @@
 import { z } from "zod";
-import type { BotType } from "@/lib/bot-personalities";
 
 const textPartSchema = z.object({
   type: z.enum(["text"]),

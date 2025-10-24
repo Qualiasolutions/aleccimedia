@@ -39,6 +39,12 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
   const uiMessages = convertToUIMessages(messagesFromDb);
 
+  // Get the bot type from the last assistant message
+  const lastAssistantMessage = messagesFromDb
+    .filter((m) => m.role === "assistant")
+    .at(-1);
+  const initialBotType = lastAssistantMessage?.botType || "alexandria";
+
   const cookieStore = await cookies();
   const chatModelFromCookie = cookieStore.get("chat-model");
 
@@ -48,6 +54,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
         <Chat
           autoResume={true}
           id={chat.id}
+          initialBotType={initialBotType}
           initialChatModel={DEFAULT_CHAT_MODEL}
           initialLastContext={chat.lastContext ?? undefined}
           initialMessages={uiMessages}
@@ -64,6 +71,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
       <Chat
         autoResume={true}
         id={chat.id}
+        initialBotType={initialBotType}
         initialChatModel={chatModelFromCookie.value}
         initialLastContext={chat.lastContext ?? undefined}
         initialMessages={uiMessages}
