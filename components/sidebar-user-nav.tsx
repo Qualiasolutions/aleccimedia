@@ -68,7 +68,6 @@ export function SidebarUserNav({ user }: { user: User }) {
             data-testid="user-nav-menu"
             side="top"
           >
-
             <DropdownMenuItem asChild data-testid="user-nav-item-auth">
               <button
                 className="w-full cursor-pointer"

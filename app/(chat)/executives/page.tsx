@@ -12,7 +12,7 @@ export default function ExecutivesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50">
       {/* Header */}
-      <header className="border-b border-white/20 bg-white/80 backdrop-blur-xl">
+      <header className="border-white/20 border-b bg-white/80 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <Link href="/">
@@ -23,7 +23,7 @@ export default function ExecutivesPage() {
               />
             </Link>
             <Link href="/">
-              <Button variant="outline" className="text-sm sm:text-base">
+              <Button className="text-sm sm:text-base" variant="outline">
                 Back to Chat
               </Button>
             </Link>
@@ -35,7 +35,7 @@ export default function ExecutivesPage() {
       <section className="py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="bg-gradient-to-r from-rose-600 via-purple-600 to-indigo-600 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl lg:text-6xl">
+            <h1 className="bg-gradient-to-r from-rose-600 via-purple-600 to-indigo-600 bg-clip-text font-bold text-4xl text-transparent sm:text-5xl lg:text-6xl">
               Meet Your Executive Team
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 sm:text-lg lg:text-xl">
@@ -54,7 +54,7 @@ export default function ExecutivesPage() {
             <Card className="overflow-hidden border-0 bg-gradient-to-br from-white via-rose-50/30 to-white shadow-xl">
               <CardContent className="p-6 sm:p-8 lg:p-10">
                 <div className="flex flex-col items-center text-center sm:flex-row sm:text-left">
-                  <div className="relative mb-6 flex-shrink-0 sm:mb-0 sm:mr-6">
+                  <div className="relative mb-6 flex-shrink-0 sm:mr-6 sm:mb-0">
                     <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-rose-400 to-orange-400 opacity-20 blur-xl" />
                     <Image
                       alt={alexandria.name}
@@ -63,34 +63,34 @@ export default function ExecutivesPage() {
                       src={alexandria.avatar!}
                       width={160}
                     />
-                    <div className="absolute -bottom-3 -right-3 flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-600 shadow-lg">
+                    <div className="-bottom-3 -right-3 absolute flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-600 shadow-lg">
                       <Crown className="h-6 w-6 text-white" />
                     </div>
                   </div>
 
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+                    <h2 className="font-bold text-2xl text-slate-900 sm:text-3xl">
                       {alexandria.name}
                     </h2>
-                    <p className="mt-1 text-base font-semibold text-rose-600 sm:text-lg">
+                    <p className="mt-1 font-semibold text-base text-rose-600 sm:text-lg">
                       {alexandria.role}
                     </p>
-                    <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">
+                    <p className="mt-4 text-slate-600 text-sm leading-relaxed sm:text-base">
                       {alexandria.personality}
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-8">
-                  <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-700 sm:text-base">
+                  <h3 className="mb-4 flex items-center gap-2 font-semibold text-slate-700 text-sm uppercase tracking-wide sm:text-base">
                     <Target className="h-4 w-4 text-rose-500 sm:h-5 sm:w-5" />
                     Core Expertise
                   </h3>
                   <div className="grid gap-2 sm:grid-cols-2 sm:gap-3">
                     {alexandria.expertise.map((item, index) => (
                       <div
+                        className="flex items-start gap-2 rounded-lg bg-rose-50 px-3 py-2 text-left text-slate-700 text-sm shadow-sm"
                         key={index}
-                        className="flex items-start gap-2 rounded-lg bg-rose-50 px-3 py-2 text-left text-sm text-slate-700 shadow-sm"
                       >
                         <span className="mt-1.5 inline-block size-2 flex-shrink-0 rounded-full bg-rose-500" />
                         <span>{item}</span>
@@ -114,7 +114,7 @@ export default function ExecutivesPage() {
             <Card className="overflow-hidden border-0 bg-gradient-to-br from-white via-blue-50/30 to-white shadow-xl">
               <CardContent className="p-6 sm:p-8 lg:p-10">
                 <div className="flex flex-col items-center text-center sm:flex-row sm:text-left">
-                  <div className="relative mb-6 flex-shrink-0 sm:mb-0 sm:mr-6">
+                  <div className="relative mb-6 flex-shrink-0 sm:mr-6 sm:mb-0">
                     <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-blue-400 to-indigo-400 opacity-20 blur-xl" />
                     <Image
                       alt={kim.name}
@@ -123,34 +123,34 @@ export default function ExecutivesPage() {
                       src={kim.avatar!}
                       width={160}
                     />
-                    <div className="absolute -bottom-3 -right-3 flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-700 shadow-lg">
+                    <div className="-bottom-3 -right-3 absolute flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-700 shadow-lg">
                       <TrendingUp className="h-6 w-6 text-white" />
                     </div>
                   </div>
 
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+                    <h2 className="font-bold text-2xl text-slate-900 sm:text-3xl">
                       {kim.name}
                     </h2>
-                    <p className="mt-1 text-base font-semibold text-blue-600 sm:text-lg">
+                    <p className="mt-1 font-semibold text-base text-blue-600 sm:text-lg">
                       {kim.role}
                     </p>
-                    <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">
+                    <p className="mt-4 text-slate-600 text-sm leading-relaxed sm:text-base">
                       {kim.personality}
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-8">
-                  <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-700 sm:text-base">
+                  <h3 className="mb-4 flex items-center gap-2 font-semibold text-slate-700 text-sm uppercase tracking-wide sm:text-base">
                     <Target className="h-4 w-4 text-blue-500 sm:h-5 sm:w-5" />
                     Core Expertise
                   </h3>
                   <div className="grid gap-2 sm:grid-cols-2 sm:gap-3">
                     {kim.expertise.map((item, index) => (
                       <div
+                        className="flex items-start gap-2 rounded-lg bg-blue-50 px-3 py-2 text-left text-slate-700 text-sm shadow-sm"
                         key={index}
-                        className="flex items-start gap-2 rounded-lg bg-blue-50 px-3 py-2 text-left text-sm text-slate-700 shadow-sm"
                       >
                         <span className="mt-1.5 inline-block size-2 flex-shrink-0 rounded-full bg-blue-500" />
                         <span>{item}</span>
@@ -175,18 +175,19 @@ export default function ExecutivesPage() {
           <Card className="mt-8 overflow-hidden border-0 bg-gradient-to-r from-rose-50 via-purple-50 to-indigo-50 shadow-xl lg:mt-12">
             <CardContent className="p-6 text-center sm:p-8 lg:p-10">
               <div className="mx-auto max-w-3xl">
-                <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl lg:text-4xl">
+                <h2 className="font-bold text-2xl text-slate-900 sm:text-3xl lg:text-4xl">
                   Get the Full Executive Perspective
                 </h2>
-                <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base lg:text-lg">
-                  Work with both Alexandria and Kim simultaneously for integrated
-                  marketing and sales strategies that drive growth. Get aligned
-                  insights from both perspectives in one conversation.
+                <p className="mt-4 text-slate-600 text-sm leading-relaxed sm:text-base lg:text-lg">
+                  Work with both Alexandria and Kim simultaneously for
+                  integrated marketing and sales strategies that drive growth.
+                  Get aligned insights from both perspectives in one
+                  conversation.
                 </p>
                 <Link href="/">
                   <Button
-                    size="lg"
                     className="mt-6 bg-gradient-to-r from-rose-500 via-purple-600 to-indigo-600 hover:from-rose-600 hover:via-purple-700 hover:to-indigo-700"
+                    size="lg"
                   >
                     Start Collaborative Session
                   </Button>

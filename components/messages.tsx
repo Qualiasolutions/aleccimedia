@@ -102,7 +102,7 @@ function PureMessages({
           ))}
 
           <AnimatePresence mode="wait">
-            {status === "submitted" && <ThinkingMessage key="thinking" />}
+            {status === "submitted" && <ThinkingMessage botType={selectedBotType} key="thinking" />}
           </AnimatePresence>
 
           <div

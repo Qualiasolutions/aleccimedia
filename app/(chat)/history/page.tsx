@@ -1,11 +1,20 @@
-import { auth } from "@/app/(auth)/auth";
-import { CalendarDays, Crown, Filter, MessageSquare, Search, TrendingUp, UserRound, Users } from "lucide-react";
+import { format } from "date-fns";
+import {
+  CalendarDays,
+  Crown,
+  Filter,
+  MessageSquare,
+  Search,
+  TrendingUp,
+  UserRound,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { auth } from "@/app/(auth)/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getChatsByUserId, getMessagesByChatId } from "@/lib/db/queries";
-import { format } from "date-fns";
 
 export default async function HistoryPage() {
   const session = await auth();
@@ -38,21 +47,21 @@ export default async function HistoryPage() {
     switch (botType) {
       case "alexandria":
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 font-semibold text-[10px] text-amber-700">
             <Crown className="h-3 w-3" />
             Alexandria
           </span>
         );
       case "kim":
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-[10px] font-semibold text-blue-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 font-semibold text-[10px] text-blue-700">
             <TrendingUp className="h-3 w-3" />
             Kim
           </span>
         );
       case "collaborative":
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-1 text-[10px] font-semibold text-purple-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-1 font-semibold text-[10px] text-purple-700">
             <Users className="h-3 w-3" />
             Both
           </span>
@@ -64,23 +73,27 @@ export default async function HistoryPage() {
 
   // Calculate analytics from messages
   const totalChats = chats.length;
-  
+
   // Get message counts per executive by analyzing messages
   const chatStats = await Promise.all(
     chats.map(async (chat) => {
       const msgs = await getMessagesByChatId({ id: chat.id });
-      
-      const botCounts = msgs.reduce((acc, msg) => {
-        const botType = (msg as any).botType || "alexandria";
-        acc[botType] = (acc[botType] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-      
+
+      const botCounts = msgs.reduce(
+        (acc, msg) => {
+          const botType = (msg as any).botType || "alexandria";
+          acc[botType] = (acc[botType] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
+
       const primaryBot = Object.entries(botCounts).reduce(
-        (max, [bot, count]) => count > (max.count || 0) ? { bot, count } : max,
+        (max, [bot, count]) =>
+          count > (max.count || 0) ? { bot, count } : max,
         { bot: "alexandria" as string, count: 0 }
       ).bot;
-      
+
       return {
         ...chat,
         primaryBot,
@@ -88,28 +101,31 @@ export default async function HistoryPage() {
       };
     })
   );
-  
-  const botDistribution = chatStats.reduce((acc, chat) => {
-    acc[chat.primaryBot] = (acc[chat.primaryBot] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+
+  const botDistribution = chatStats.reduce(
+    (acc, chat) => {
+      acc[chat.primaryBot] = (acc[chat.primaryBot] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50">
       {/* Header */}
-      <header className="border-b border-white/20 bg-white/80 backdrop-blur-xl">
+      <header className="border-white/20 border-b bg-white/80 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+              <h1 className="font-bold text-2xl text-slate-900 sm:text-3xl">
                 Conversation History
               </h1>
-              <p className="mt-1 text-sm text-slate-600">
+              <p className="mt-1 text-slate-600 text-sm">
                 Review your past consulting sessions
               </p>
             </div>
             <Link href="/">
-              <Button variant="outline" className="w-full sm:w-auto">
+              <Button className="w-full sm:w-auto" variant="outline">
                 Back to Chat
               </Button>
             </Link>
@@ -118,7 +134,7 @@ export default async function HistoryPage() {
       </header>
 
       {/* Analytics Section */}
-      <section className="border-b border-white/20 bg-white/40 py-6 sm:py-8">
+      <section className="border-white/20 border-b bg-white/40 py-6 sm:py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Card className="border-0 bg-gradient-to-br from-white to-rose-50/50 shadow-md">
@@ -128,10 +144,10 @@ export default async function HistoryPage() {
                     <MessageSquare className="h-5 w-5 text-rose-600 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600 sm:text-sm">
+                    <p className="text-slate-600 text-xs sm:text-sm">
                       Total Conversations
                     </p>
-                    <p className="text-xl font-bold text-slate-900 sm:text-2xl">
+                    <p className="font-bold text-slate-900 text-xl sm:text-2xl">
                       {totalChats}
                     </p>
                   </div>
@@ -146,10 +162,10 @@ export default async function HistoryPage() {
                     <Crown className="h-5 w-5 text-amber-600 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600 sm:text-sm">
+                    <p className="text-slate-600 text-xs sm:text-sm">
                       Alexandria Sessions
                     </p>
-                    <p className="text-xl font-bold text-slate-900 sm:text-2xl">
+                    <p className="font-bold text-slate-900 text-xl sm:text-2xl">
                       {botDistribution.alexandria || 0}
                     </p>
                   </div>
@@ -164,8 +180,10 @@ export default async function HistoryPage() {
                     <TrendingUp className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600 sm:text-sm">Kim Sessions</p>
-                    <p className="text-xl font-bold text-slate-900 sm:text-2xl">
+                    <p className="text-slate-600 text-xs sm:text-sm">
+                      Kim Sessions
+                    </p>
+                    <p className="font-bold text-slate-900 text-xl sm:text-2xl">
                       {botDistribution.kim || 0}
                     </p>
                   </div>
@@ -180,10 +198,10 @@ export default async function HistoryPage() {
                     <Users className="h-5 w-5 text-purple-600 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600 sm:text-sm">
+                    <p className="text-slate-600 text-xs sm:text-sm">
                       Collaborative
                     </p>
-                    <p className="text-xl font-bold text-slate-900 sm:text-2xl">
+                    <p className="font-bold text-slate-900 text-xl sm:text-2xl">
                       {botDistribution.collaborative || 0}
                     </p>
                   </div>
@@ -201,10 +219,10 @@ export default async function HistoryPage() {
             <Card className="border-0 bg-white/80 shadow-xl">
               <CardContent className="p-8 text-center sm:p-12">
                 <MessageSquare className="mx-auto h-12 w-12 text-slate-300 sm:h-16 sm:w-16" />
-                <h3 className="mt-4 text-lg font-semibold text-slate-900 sm:text-xl">
+                <h3 className="mt-4 font-semibold text-lg text-slate-900 sm:text-xl">
                   No conversations yet
                 </h3>
-                <p className="mt-2 text-sm text-slate-600 sm:text-base">
+                <p className="mt-2 text-slate-600 text-sm sm:text-base">
                   Start your first conversation with our executive consultants
                 </p>
                 <Link href="/">
@@ -215,23 +233,26 @@ export default async function HistoryPage() {
           ) : (
             <div className="grid gap-4 sm:gap-6">
               {chatStats.map((chat) => (
-                <Link key={chat.id} href={`/chat/${chat.id}`}>
-                  <Card className="group border-0 bg-white/80 shadow-md transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
+                <Link href={`/chat/${chat.id}`} key={chat.id}>
+                  <Card className="group hover:-translate-y-1 border-0 bg-white/80 shadow-md transition-all duration-200 hover:shadow-xl">
                     <CardContent className="p-4 sm:p-6">
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div className="flex-1 min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-start gap-3">
                             <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-100 to-purple-100">
                               {getBotIcon(chat.primaryBot)}
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="truncate text-base font-semibold text-slate-900 group-hover:text-rose-600 sm:text-lg">
+                            <div className="min-w-0 flex-1">
+                              <h3 className="truncate font-semibold text-base text-slate-900 group-hover:text-rose-600 sm:text-lg">
                                 {chat.title}
                               </h3>
-                              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500 sm:text-sm">
+                              <div className="mt-2 flex flex-wrap items-center gap-2 text-slate-500 text-xs sm:text-sm">
                                 <span className="flex items-center gap-1">
                                   <CalendarDays className="h-3 w-3 sm:h-4 sm:w-4" />
-                                  {format(new Date(chat.createdAt), "MMM d, yyyy")}
+                                  {format(
+                                    new Date(chat.createdAt),
+                                    "MMM d, yyyy"
+                                  )}
                                 </span>
                                 <span>•</span>
                                 <span>
@@ -249,7 +270,7 @@ export default async function HistoryPage() {
                         <div className="flex items-center gap-2">
                           {getBotBadge(chat.primaryBot)}
                           <span
-                            className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase ${
+                            className={`rounded-full px-2 py-1 font-semibold text-[10px] uppercase ${
                               chat.visibility === "private"
                                 ? "bg-slate-100 text-slate-600"
                                 : "bg-emerald-100 text-emerald-700"

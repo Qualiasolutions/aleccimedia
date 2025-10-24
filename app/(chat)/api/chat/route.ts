@@ -262,7 +262,10 @@ export async function POST(request: Request) {
             createdAt: new Date(),
             attachments: [],
             chatId: id,
-            botType: currentMessage.role === "assistant" ? (selectedBotType as "alexandria" | "kim" | "collaborative") : null,
+            botType:
+              currentMessage.role === "assistant"
+                ? (selectedBotType as "alexandria" | "kim" | "collaborative")
+                : null,
           })),
         });
 

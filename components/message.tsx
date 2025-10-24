@@ -58,7 +58,9 @@ const PurePreviewMessage = ({
 
   // Get bot type from message metadata if available
   // For old messages without botType, default to 'alexandria' to preserve history
-  const messageBotType = message.metadata?.botType ?? (message.role === 'assistant' ? 'alexandria' : selectedBotType);
+  const messageBotType =
+    message.metadata?.botType ??
+    (message.role === "assistant" ? "alexandria" : selectedBotType);
 
   return (
     <motion.div
@@ -149,13 +151,15 @@ const PurePreviewMessage = ({
                         };
                       case "kim":
                         return {
-                          gradient: "from-blue-50 via-indigo-50/30 to-blue-50/20",
+                          gradient:
+                            "from-blue-50 via-indigo-50/30 to-blue-50/20",
                           border: "border-blue-200/40",
                           shadow: "shadow-blue-200/30",
                         };
                       case "collaborative":
                         return {
-                          gradient: "from-rose-50 via-purple-50/30 to-indigo-50/20",
+                          gradient:
+                            "from-rose-50 via-purple-50/30 to-indigo-50/20",
                           border: "border-purple-200/40",
                           shadow: "shadow-purple-200/30",
                         };
@@ -184,8 +188,19 @@ const PurePreviewMessage = ({
                     >
                       <div className="relative">
                         {/* Executive-specific gradient background */}
-                        <div className={cn("absolute inset-0 rounded-3xl bg-gradient-to-br opacity-50", styling.gradient)} />
-                        <div className={cn("relative rounded-3xl border bg-white/90 p-6 shadow-2xl backdrop-blur-xl", styling.border, styling.shadow)}>
+                        <div
+                          className={cn(
+                            "absolute inset-0 rounded-3xl bg-gradient-to-br opacity-50",
+                            styling.gradient
+                          )}
+                        />
+                        <div
+                          className={cn(
+                            "relative rounded-3xl border bg-white/90 p-6 shadow-2xl backdrop-blur-xl",
+                            styling.border,
+                            styling.shadow
+                          )}
+                        >
                           <EnhancedChatMessage
                             botType={messageBotType}
                             content={sanitizeText(part.text)}
@@ -387,10 +402,15 @@ export const PreviewMessage = memo(
   }
 );
 
-export const ThinkingMessage = ({ botType = "alexandria" }: { botType?: BotType }) => {
+export const ThinkingMessage = ({
+  botType = "alexandria",
+}: {
+  botType?: BotType;
+}) => {
   const role = "assistant";
-  const personality = BOT_PERSONALITIES[botType] ?? BOT_PERSONALITIES.alexandria;
-  
+  const personality =
+    BOT_PERSONALITIES[botType] ?? BOT_PERSONALITIES.alexandria;
+
   const getThinkingText = () => {
     switch (botType) {
       case "alexandria":

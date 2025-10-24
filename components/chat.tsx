@@ -98,6 +98,9 @@ export function Chat({
     }
   };
 
+  // Create a stable reference to the current bot type for message sending
+  const getCurrentBotType = () => selectedBotRef.current;
+
   const {
     messages,
     setMessages,
@@ -114,14 +117,16 @@ export function Chat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
       fetch: fetchWithErrorHandlers,
-      prepareSendMessagesRequest(request) {
+      prepareSendMessagesRequest: (request) => {
+        // Capture the current bot type at the exact moment of sending
+        const currentBotType = selectedBot;
         return {
           body: {
             id: request.id,
             message: request.messages.at(-1),
             selectedChatModel: currentModelIdRef.current,
             selectedVisibilityType: visibilityType,
-            selectedBotType: selectedBotRef.current,
+            selectedBotType: currentBotType,
             ...request.body,
           },
         };
@@ -152,6 +157,20 @@ export function Chat({
       }
     },
   });
+
+  // Sync selectedBot with incoming assistant messages
+  useEffect(() => {
+    const lastAssistantMessage = messages
+      .filter((msg) => msg.role === "assistant")
+      .at(-1);
+
+    if (lastAssistantMessage?.metadata?.botType) {
+      const messageBotType = lastAssistantMessage.metadata.botType as BotType;
+      if (messageBotType !== selectedBot) {
+        setSelectedBot(messageBotType);
+      }
+    }
+  }, [messages, selectedBot]);
 
   const searchParams = useSearchParams();
   const query = searchParams.get("query");

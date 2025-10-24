@@ -63,7 +63,7 @@ export const systemPrompt = ({
 }) => {
   const requestPrompt = getRequestPromptFromHints(requestHints);
   let botSystemPrompt = getSystemPrompt(botType);
-  
+
   // Add smart context detection for collaborative mode
   if (botType === "collaborative") {
     botSystemPrompt += `\n\nSMART CONTEXT DETECTION: If the user specifically addresses one executive (e.g., "Kim, what do you think?" or "@alexandria your take?" or "Alexandria alone"), respond ONLY as that executive. Look for natural cues like names, "you" directed at one person, or explicit requests. When responding as one executive, start with their name and don't include the other's perspective.`;
