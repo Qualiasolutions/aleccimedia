@@ -7,9 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import useSWR, { useSWRConfig } from "swr";
 import { unstable_serialize } from "swr/infinite";
 import { useWindowSize } from "usehooks-ts";
-import { ChatHeader } from "@/components/chat-header";
 import { ExecutiveSwitch } from "@/components/executive-switch";
-import { HeaderNavbar } from "@/components/header-navbar";
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import {
   AlertDialog,
@@ -187,7 +185,7 @@ export function Chat({
 
   return (
     <>
-      <div className="relative flex h-full w-full overflow-hidden bg-[radial-gradient(circle_at_top,_#fce7f3_0%,_#f9f6ff_35%,_#f6f9ff_70%,_#f3f4ff_100%)]">
+      <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[radial-gradient(circle_at_top,_#fce7f3_0%,_#f9f6ff_35%,_#f6f9ff_70%,_#f3f4ff_100%)]">
         <div aria-hidden className="pointer-events-none absolute inset-0">
           <div className="absolute top-[-10%] left-[-16%] h-[28rem] w-[28rem] rounded-full bg-rose-200/50 blur-[160px]" />
           <div className="absolute top-[-12%] right-[-10%] h-[24rem] w-[24rem] rounded-full bg-amber-200/40 blur-[150px]" />
@@ -197,18 +195,18 @@ export function Chat({
 
         <div className="flex h-full w-full flex-col">
           {/* Chat Controls - Sticky Header */}
-          <div className="sticky top-0 z-10 flex h-auto min-h-[52px] sm:min-h-[60px] items-center bg-gradient-to-b from-white/95 to-transparent px-2 py-2 sm:px-4 lg:px-6 backdrop-blur-xl transition-shadow duration-300">
+          <div className="z-10 flex h-auto min-h-[44px] flex-shrink-0 items-center bg-gradient-to-b from-white/95 to-transparent px-2 py-1.5 backdrop-blur-xl transition-shadow duration-300 sm:min-h-[52px] sm:px-4 sm:py-2 lg:px-6">
             <div className="w-full">
-              <div className="rounded-xl sm:rounded-[18px] border border-white/60 bg-white/80 p-1.5 sm:p-2.5 lg:p-3 shadow-md shadow-rose-200/40 backdrop-blur-xl">
-                <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-3">
+              <div className="rounded-xl border border-white/60 bg-white/80 p-1.5 shadow-md shadow-rose-200/40 backdrop-blur-xl sm:rounded-[16px] sm:p-2 lg:p-2.5">
+                <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
                   {/* Left side - Sidebar and controls */}
-                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                  <div className="flex flex-shrink-0 items-center gap-1 sm:gap-2">
                     <SidebarToggle />
 
                     {/* New Chat Button */}
                     {(!open || windowWidth < 768) && (
                       <Button
-                        className="hover:-translate-y-0.5 h-7 sm:h-8 rounded-full border border-white/70 bg-white/85 px-2 sm:px-3 font-medium text-slate-600 text-xs sm:text-sm shadow-rose-100/40 shadow-sm transition-all duration-200 hover:bg-white hover:shadow-md"
+                        className="hover:-translate-y-0.5 h-6 rounded-full border border-white/70 bg-white/85 px-2 font-medium text-[10px] text-slate-600 shadow-rose-100/40 shadow-sm transition-all duration-200 hover:bg-white hover:shadow-md sm:h-7 sm:px-3 sm:text-xs"
                         onClick={() => {
                           router.push("/");
                           router.refresh();
@@ -230,7 +228,7 @@ export function Chat({
                   </div>
 
                   {/* Right side - Executive selector */}
-                  <div className="flex-1 min-w-0 max-w-[140px] sm:max-w-xs lg:max-w-md">
+                  <div className="min-w-0 max-w-[110px] flex-1 sm:max-w-[180px] lg:max-w-md">
                     <ExecutiveSwitch
                       onExecutiveChange={handleBotChange}
                       selectedExecutive={selectedBot}
@@ -246,16 +244,12 @@ export function Chat({
             {messages.length === 0 ? (
               <div className="h-full overflow-auto px-2 pb-1 sm:px-4 lg:px-6">
                 <ExecutiveLanding
-                  className="mt-1"
                   onSelect={handleBotChange}
-                  onStarterClick={(starter) => {
-                    setInput(starter);
-                  }}
                   selectedBot={selectedBot}
                 />
               </div>
             ) : (
-              <div className="h-full px-2 pb-1 sm:px-3 lg:px-4">
+              <div className="h-full overflow-hidden px-2 pb-1 sm:px-3 lg:px-4">
                 <div className="mx-auto h-full w-full max-w-full sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl">
                   <Messages
                     chatId={id}
@@ -276,13 +270,13 @@ export function Chat({
           </div>
 
           {/* Input Area */}
-          <div className="px-2 pb-2 pt-1 sm:px-3 lg:px-4 sm:pb-2.5 sm:pt-1.5">
+          <div className="flex-shrink-0 px-2 pt-1 pb-1.5 sm:px-3 sm:pt-1 sm:pb-2 lg:px-4">
             {!isReadonly && (
               <div className="mx-auto max-w-full sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl">
                 <MultimodalInput
                   attachments={attachments}
                   chatId={id}
-                  className="rounded-2xl sm:rounded-[20px] border border-white/70 bg-white/95 p-2.5 sm:p-3 lg:p-4 shadow-lg shadow-rose-200/40 backdrop-blur-xl"
+                  className="rounded-2xl border border-white/70 bg-white/95 p-2 shadow-lg shadow-rose-200/40 backdrop-blur-xl sm:rounded-[18px] sm:p-2.5 lg:p-3"
                   input={input}
                   messages={messages}
                   onModelChange={setCurrentModelId}

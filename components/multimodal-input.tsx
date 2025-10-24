@@ -263,7 +263,12 @@ function PureMultimodalInput({
   );
 
   return (
-    <div className={cn("relative flex w-full flex-col gap-2 sm:gap-2.5 lg:gap-3", className)}>
+    <div
+      className={cn(
+        "relative flex w-full flex-col gap-1.5 sm:gap-2",
+        className
+      )}
+    >
       <input
         className="-top-4 -left-4 pointer-events-none fixed size-0.5 opacity-0"
         multiple
@@ -286,7 +291,7 @@ function PureMultimodalInput({
       >
         {(attachments.length > 0 || uploadQueue.length > 0) && (
           <div
-            className="flex flex-row items-end gap-1 sm:gap-1.5 overflow-x-scroll"
+            className="flex flex-row items-end gap-1 overflow-x-scroll sm:gap-1.5"
             data-testid="attachments-preview"
           >
             {attachments.map((attachment) => (
@@ -317,14 +322,14 @@ function PureMultimodalInput({
             ))}
           </div>
         )}
-        <div className="flex flex-row items-start gap-0.5 sm:gap-1 lg:gap-2">
+        <div className="flex flex-row items-start gap-0.5 sm:gap-1 lg:gap-1.5">
           <PromptInputTextarea
             autoFocus
-            className="grow resize-none border-0! border-none! bg-transparent p-1.5 sm:p-2 text-xs sm:text-sm outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
+            className="grow resize-none border-0! border-none! bg-transparent p-1 text-[11px] outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 sm:p-1.5 sm:text-xs lg:text-sm [&::-webkit-scrollbar]:hidden"
             data-testid="multimodal-input"
             disableAutoResize={true}
-            maxHeight={200}
-            minHeight={38}
+            maxHeight={180}
+            minHeight={32}
             onChange={handleInput}
             placeholder="Send a message..."
             ref={textareaRef}
@@ -341,7 +346,7 @@ function PureMultimodalInput({
               status={status}
             />
             <VoiceInputButton
-              className="aspect-square h-7 sm:h-8 rounded-lg border border-transparent text-slate-500 transition-colors duration-200 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
+              className="aspect-square h-6 rounded-lg border border-transparent text-slate-500 transition-colors duration-200 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 sm:h-7"
               disabled={status !== "ready"}
               onTranscript={handleVoiceTranscript}
               size="sm"
@@ -356,7 +361,7 @@ function PureMultimodalInput({
             <StopButton setMessages={setMessages} stop={stop} />
           ) : (
             <PromptInputSubmit
-              className="size-8 sm:size-9 rounded-full bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-lg shadow-rose-200/50 transition-all hover:scale-[1.03] hover:shadow-rose-200/60 disabled:scale-100 disabled:bg-muted disabled:text-muted-foreground"
+              className="size-7 rounded-full bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-lg shadow-rose-200/50 transition-all hover:scale-[1.03] hover:shadow-rose-200/60 disabled:scale-100 disabled:bg-muted disabled:text-muted-foreground sm:size-8"
               disabled={!input.trim() || uploadQueue.length > 0}
               status={status}
             >
@@ -406,7 +411,7 @@ function PureAttachmentsButton({
   return (
     <Button
       aria-label="Upload files"
-      className="aspect-square h-8 rounded-lg border border-transparent p-1 text-slate-500 transition-colors duration-200 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
+      className="aspect-square h-6 rounded-lg border border-transparent p-0.5 text-slate-500 transition-colors duration-200 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 sm:h-7 sm:p-1"
       data-testid="attachments-button"
       disabled={status !== "ready" || isReasoningModel}
       onClick={(event) => {
@@ -415,7 +420,7 @@ function PureAttachmentsButton({
       }}
       variant="ghost"
     >
-      <PaperclipIcon size={14} style={{ width: 14, height: 14 }} />
+      <PaperclipIcon size={14} />
     </Button>
   );
 }
@@ -485,6 +490,8 @@ function PureModelSelectorCompact({
     }
   };
 
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+
   return (
     <PromptInputModelSelect
       onOpenChange={setIsOpen}
@@ -502,7 +509,7 @@ function PureModelSelectorCompact({
       value={selectedModel?.name}
     >
       <Trigger
-        className="group hover:-translate-y-0.5 flex h-9 items-center gap-2.5 rounded-xl border border-white/20 bg-gradient-to-r from-white/90 to-white/80 px-3 py-2 font-medium text-slate-700 text-sm shadow-lg backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/90 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:ring-offset-white/50"
+        className="group hover:-translate-y-0.5 flex h-7 items-center gap-1.5 rounded-lg border border-white/20 bg-gradient-to-r from-white/90 to-white/80 px-2 py-1.5 font-medium text-[10px] text-slate-700 shadow-lg backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/90 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:ring-offset-white/50 sm:h-8 sm:gap-2 sm:rounded-xl sm:px-2.5 sm:text-xs lg:h-9 lg:px-3 lg:text-sm"
         type="button"
       >
         <div className="relative">
@@ -511,15 +518,15 @@ function PureModelSelectorCompact({
             <div className="h-1.5 w-1.5 rounded-full border border-white bg-emerald-500" />
           </div>
         </div>
-        <span className="hidden font-semibold text-slate-800 text-xs sm:block">
-          {selectedModel?.name}
+        <span className="hidden font-semibold text-[10px] text-slate-800 sm:inline sm:text-xs lg:text-sm">
+          {isMobile ? selectedModel?.name.split(" ")[0] : selectedModel?.name}
         </span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
           <div className="text-slate-500">
-            <ChevronDownIcon size={14} />
+            <ChevronDownIcon size={12} />
           </div>
         </motion.div>
       </Trigger>
@@ -608,7 +615,7 @@ function PureStopButton({
 }) {
   return (
     <Button
-      className="size-7 rounded-full bg-foreground p-1 text-background transition-colors duration-200 hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground"
+      className="size-6 rounded-full bg-foreground p-0.5 text-background transition-colors duration-200 hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground sm:size-7 sm:p-1"
       data-testid="stop-button"
       onClick={(event) => {
         event.preventDefault();

@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import Script from "next/script";
 import { AppSidebar } from "@/components/app-sidebar";
 import { DataStreamProvider } from "@/components/data-stream-provider";
