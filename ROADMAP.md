@@ -27,30 +27,30 @@ This roadmap outlines strategic improvements for the Alecci Media AI chatbot app
 
 ### 🔥 HIGH IMPACT, LOW EFFORT (Sprint 1-2)
 
-- [ ] **Bot Type Badge on Messages** `#ui` `#quick-win`
+- [x] **Bot Type Badge on Messages** `#ui` `#quick-win` ✅ 2025-10-24
   - Show which executive responded with colored badge
   - Match executive gradient colors
-  - **Files:** `components/message.tsx`, `components/enhanced-chat-message.tsx`
-  - **Estimate:** 1 day
+  - **Files:** `components/enhanced-chat-message.tsx`
+  - **Completed:** Badge already existed, verified styling
 
-- [ ] **Conversation Stats in History** `#feature` `#quick-win`
+- [x] **Conversation Stats in History** `#feature` `#quick-win` ✅ 2025-10-24
   - Show executive distribution per chat
   - Message count, date range
-  - **Files:** `app/(chat)/history/page.tsx`, `lib/db/queries.ts`
-  - **Estimate:** 2 days
+  - **Files:** `app/(chat)/history/page.tsx`
+  - **Completed:** Added chatStats with primaryBot detection and message counts
 
-- [ ] **Executive-Specific Message Styling** `#ui` `#quick-win`
+- [x] **Executive-Specific Message Styling** `#ui` `#quick-win` ✅ 2025-10-24
   - Alexandria: Rose gradient border
   - Kim: Blue gradient border
   - Collaborative: Mixed gradient
-  - **Files:** `components/message.tsx`, `components/enhanced-chat-message.tsx`
-  - **Estimate:** 1 day
+  - **Files:** `components/message.tsx`
+  - **Completed:** Executive-specific gradients, borders, and shadows implemented
 
-- [ ] **Better Empty States** `#ux` `#quick-win`
+- [x] **Better Empty States** `#ux` `#quick-win` ✅ 2025-10-24
   - Suggest conversation starters per executive
   - Show example queries
-  - **Files:** `components/executive-landing.tsx`
-  - **Estimate:** 1 day
+  - **Files:** `components/executive-landing.tsx`, `components/chat.tsx`
+  - **Completed:** 4 clickable suggestions per executive that prefill input
 
 - [ ] **Executive Memory System** `#enhancement` `#ai`
   - Track which executive handles which topics per user
@@ -146,10 +146,14 @@ This roadmap outlines strategic improvements for the Alecci Media AI chatbot app
 - [x] Authentication (NextAuth v5)
 - [x] Database with Drizzle ORM
 - [x] AI streaming with SDK v5
+- [x] **Bot type badge on messages** (2025-10-24)
+- [x] **Executive-specific message styling** (2025-10-24)
+- [x] **Conversation starters on empty state** (2025-10-24)
+- [x] **Conversation stats in history page** (2025-10-24)
 
 ### In Progress 🚧
 
-- [ ] (Check PROGRESS.md for current sprint)
+- [ ] (None - check PROGRESS.md for next sprint plans)
 
 ---
 
