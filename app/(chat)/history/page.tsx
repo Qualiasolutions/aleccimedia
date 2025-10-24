@@ -4,7 +4,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getChatsByUserId } from "@/lib/db/queries";
+import { getChatsByUserId, getMessagesByChatId } from "@/lib/db/queries";
 import { format } from "date-fns";
 
 export default async function HistoryPage() {
