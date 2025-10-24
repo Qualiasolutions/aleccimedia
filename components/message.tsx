@@ -56,11 +56,9 @@ const PurePreviewMessage = ({
 
   useDataStream();
 
-  // Get bot type from message metadata if available
-  // For old messages without botType, default to 'alexandria' to preserve history
-  const messageBotType =
-    message.metadata?.botType ??
-    (message.role === "assistant" ? "alexandria" : selectedBotType);
+  // Get bot type from message metadata if available, otherwise use the selected bot
+  // This ensures correct executive displays during streaming and after page refresh
+  const messageBotType = message.metadata?.botType ?? selectedBotType;
 
   return (
     <motion.div
