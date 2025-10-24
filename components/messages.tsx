@@ -4,8 +4,10 @@ import { AnimatePresence } from "framer-motion";
 import { ArrowDownIcon } from "lucide-react";
 import { memo, useEffect } from "react";
 import { useMessages } from "@/hooks/use-messages";
+import type { BotType } from "@/lib/bot-personalities";
 import type { Vote } from "@/lib/db/schema";
 import type { ChatMessage } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { useDataStream } from "./data-stream-provider";
 import { Conversation, ConversationContent } from "./elements/conversation";
 import { Greeting } from "./greeting";
@@ -21,6 +23,8 @@ type MessagesProps = {
   isReadonly: boolean;
   isArtifactVisible: boolean;
   selectedModelId: string;
+  selectedBotType: BotType;
+  className?: string;
 };
 
 function PureMessages({
@@ -32,6 +36,8 @@ function PureMessages({
   regenerate,
   isReadonly,
   selectedModelId,
+  selectedBotType,
+  className,
 }: MessagesProps) {
   const {
     containerRef: messagesContainerRef,
@@ -61,12 +67,15 @@ function PureMessages({
 
   return (
     <div
-      className="overscroll-behavior-contain -webkit-overflow-scrolling-touch flex-1 touch-pan-y overflow-y-scroll"
+      className={cn(
+        "overscroll-behavior-contain -webkit-overflow-scrolling-touch flex-1 touch-pan-y overflow-y-scroll scroll-smooth",
+        className
+      )}
       ref={messagesContainerRef}
       style={{ overflowAnchor: "none" }}
     >
-      <Conversation className="mx-auto flex min-w-0 max-w-4xl flex-col gap-4 md:gap-6">
-        <ConversationContent className="flex flex-col gap-4 px-2 py-4 md:gap-6 md:px-4">
+      <Conversation className="mx-auto flex h-full min-w-0 max-w-4xl flex-col gap-6 px-4 py-8 md:px-6">
+        <ConversationContent className="flex flex-col gap-5 px-1 py-2 md:gap-7">
           {messages.length === 0 && <Greeting />}
 
           {messages.map((message, index) => (
@@ -82,6 +91,7 @@ function PureMessages({
               requiresScrollPadding={
                 hasSentMessage && index === messages.length - 1
               }
+              selectedBotType={selectedBotType}
               setMessages={setMessages}
               vote={
                 votes
@@ -103,14 +113,17 @@ function PureMessages({
       </Conversation>
 
       {!isAtBottom && (
-        <button
-          aria-label="Scroll to bottom"
-          className="-translate-x-1/2 absolute bottom-40 left-1/2 z-10 rounded-full border bg-background p-2 shadow-lg transition-colors hover:bg-muted"
-          onClick={() => scrollToBottom("smooth")}
-          type="button"
-        >
-          <ArrowDownIcon className="size-4" />
-        </button>
+        <div className="pointer-events-none absolute right-0 bottom-36 left-0 z-10 flex justify-center">
+          <button
+            aria-label="Scroll to bottom"
+            className="hover:-translate-y-0.5 pointer-events-auto inline-flex items-center justify-center gap-2 rounded-full border border-white/60 bg-white/90 px-4 py-2 font-semibold text-rose-600 text-xs uppercase tracking-wide shadow-lg shadow-rose-200/40 backdrop-blur transition-all hover:bg-white"
+            onClick={() => scrollToBottom("smooth")}
+            type="button"
+          >
+            <ArrowDownIcon className="size-4" />
+            Resume
+          </button>
+        </div>
       )}
     </div>
   );
@@ -125,6 +138,9 @@ export const Messages = memo(PureMessages, (prevProps, nextProps) => {
     return false;
   }
   if (prevProps.selectedModelId !== nextProps.selectedModelId) {
+    return false;
+  }
+  if (prevProps.selectedBotType !== nextProps.selectedBotType) {
     return false;
   }
   if (prevProps.messages.length !== nextProps.messages.length) {

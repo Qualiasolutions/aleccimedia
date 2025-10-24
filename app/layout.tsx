@@ -7,9 +7,10 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chat.vercel.ai"),
-  title: "Next.js Chatbot Template",
-  description: "Next.js chatbot template using the AI SDK.",
+  metadataBase: new URL("https://aleccimedia.vercel.app"),
+  title: "Alecci Media AI Agents - Executive Consulting Team",
+  description:
+    "Get strategic business guidance from AI executives Alexandria Alecci (CMO) and Kim Mylls (CSO). Professional AI consulting for marketing and sales strategy.",
 };
 
 export const viewport = {
@@ -71,12 +72,12 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased">
+      <body className="min-h-screen bg-[#f9f6ff] text-foreground antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           disableTransitionOnChange
-          enableSystem
+          enableSystem={false}
         >
           <Toaster position="top-center" />
           <SessionProvider>{children}</SessionProvider>

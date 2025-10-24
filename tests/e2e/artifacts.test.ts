@@ -24,7 +24,7 @@ test.describe("Artifacts activity", () => {
 
     expect(artifactPage.artifact).toBeVisible();
 
-    const assistantMessage = await chatPage.getRecentAssistantMessage();
+    const assistantMessage = await chatPage.getRecentAssistantMessageOrThrow();
     expect(assistantMessage.content).toBe(
       "A document was created and is now visible to the user."
     );
@@ -43,7 +43,7 @@ test.describe("Artifacts activity", () => {
 
     expect(artifactPage.artifact).toBeVisible();
 
-    const assistantMessage = await chatPage.getRecentAssistantMessage();
+    const assistantMessage = await chatPage.getRecentAssistantMessageOrThrow();
     expect(assistantMessage.content).toBe(
       "A document was created and is now visible to the user."
     );
@@ -63,7 +63,8 @@ test.describe("Artifacts activity", () => {
 
     expect(artifactPage.artifact).toBeVisible();
 
-    const assistantMessage = await artifactPage.getRecentAssistantMessage();
+    const assistantMessage =
+      await artifactPage.getRecentAssistantMessageOrThrow();
     expect(assistantMessage.content).toBe(
       "A document was created and is now visible to the user."
     );
@@ -71,7 +72,8 @@ test.describe("Artifacts activity", () => {
     await artifactPage.sendUserMessage("Thanks!");
     await artifactPage.isGenerationComplete();
 
-    const secondAssistantMessage = await chatPage.getRecentAssistantMessage();
+    const secondAssistantMessage =
+      await chatPage.getRecentAssistantMessageOrThrow();
     expect(secondAssistantMessage.content).toBe("You're welcome!");
   });
 });

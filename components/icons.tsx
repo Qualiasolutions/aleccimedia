@@ -1,3 +1,9 @@
+import type { SVGProps } from "react";
+
+type IconProps = SVGProps<SVGSVGElement> & {
+  size?: number;
+};
+
 export const BotIcon = () => {
   return (
     <svg
@@ -17,15 +23,22 @@ export const BotIcon = () => {
   );
 };
 
-export const UserIcon = () => {
+export const UserIcon = ({
+  className,
+  height = 16,
+  width = 16,
+  ...props
+}: SVGProps<SVGSVGElement>) => {
   return (
     <svg
+      className={className}
       data-testid="geist-icon"
-      height="16"
+      height={height}
       strokeLinejoin="round"
       style={{ color: "currentcolor" }}
       viewBox="0 0 16 16"
-      width="16"
+      width={width}
+      {...props}
     >
       <path
         clipRule="evenodd"
@@ -893,14 +906,24 @@ export const SparklesIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
-export const CheckCircleFillIcon = ({ size = 16 }: { size?: number }) => {
+export const CheckCircleFillIcon = ({
+  size = 16,
+  className,
+  height,
+  width,
+  ...props
+}: IconProps) => {
+  const finalHeight = height ?? size;
+  const finalWidth = width ?? size;
   return (
     <svg
-      height={size}
+      className={className}
+      height={finalHeight}
       strokeLinejoin="round"
       style={{ color: "currentcolor" }}
       viewBox="0 0 16 16"
-      width={size}
+      width={finalWidth}
+      {...props}
     >
       <path
         clipRule="evenodd"

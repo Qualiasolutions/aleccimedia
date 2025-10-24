@@ -59,6 +59,9 @@ export const message = pgTable("Message_v2", {
   parts: json("parts").notNull(),
   attachments: json("attachments").notNull(),
   createdAt: timestamp("createdAt").notNull(),
+  botType: varchar("botType", {
+    enum: ["alexandria", "kim", "collaborative"],
+  }),
 });
 
 export type DBMessage = InferSelectModel<typeof message>;

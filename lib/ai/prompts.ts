@@ -1,5 +1,7 @@
 import type { Geo } from "@vercel/functions";
 import type { ArtifactKind } from "@/components/artifact";
+import type { BotType } from "@/lib/bot-personalities";
+import { getSystemPrompt } from "@/lib/bot-personalities";
 
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
@@ -53,17 +55,25 @@ About the origin of user's request:
 export const systemPrompt = ({
   selectedChatModel,
   requestHints,
+  botType = "alexandria",
 }: {
   selectedChatModel: string;
   requestHints: RequestHints;
+  botType?: BotType;
 }) => {
   const requestPrompt = getRequestPromptFromHints(requestHints);
-
-  if (selectedChatModel === "chat-model-reasoning") {
-    return `${regularPrompt}\n\n${requestPrompt}`;
+  let botSystemPrompt = getSystemPrompt(botType);
+  
+  // Add smart context detection for collaborative mode
+  if (botType === "collaborative") {
+    botSystemPrompt += `\n\nSMART CONTEXT DETECTION: If the user specifically addresses one executive (e.g., "Kim, what do you think?" or "@alexandria your take?" or "Alexandria alone"), respond ONLY as that executive. Look for natural cues like names, "you" directed at one person, or explicit requests. When responding as one executive, start with their name and don't include the other's perspective.`;
   }
 
-  return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
+  if (selectedChatModel === "chat-model-reasoning") {
+    return `${botSystemPrompt}\n\n${requestPrompt}`;
+  }
+
+  return `${botSystemPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
 };
 
 export const codePrompt = `

@@ -47,7 +47,7 @@ const PureChatItem = ({
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive}>
         <Link
-          className="group relative flex flex-col justify-center rounded-xl border border-transparent px-3 py-4 my-3 min-h-[60px] transition-all duration-200 hover:border-rose-200 hover:bg-gradient-to-r hover:from-rose-50 hover:to-rose-100"
+          className="group relative my-3 flex min-h-[60px] flex-col justify-center rounded-xl border border-transparent px-3 py-4 transition-all duration-200 hover:border-rose-200 hover:bg-gradient-to-r hover:from-rose-50 hover:to-rose-100"
           href={`/chat/${chat.id}`}
           onClick={() => setOpenMobile(false)}
         >
@@ -102,7 +102,7 @@ const PureChatItem = ({
             className="mr-1 rounded-lg transition-colors duration-200 hover:bg-rose-100 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             showOnHover={!isActive}
           >
-            <div className="h-4 w-4 flex items-center justify-center">
+            <div className="flex h-4 w-4 items-center justify-center">
               <MoreHorizontalIcon size={16} />
             </div>
             <span className="sr-only">More</span>
@@ -116,9 +116,9 @@ const PureChatItem = ({
         >
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="cursor-pointer rounded-lg transition-colors duration-200 hover:bg-rose-50">
-              <div className="mr-2 h-4 w-4 flex items-center justify-center">
-                  <ShareIcon size={16} />
-                </div>
+              <div className="mr-2 flex h-4 w-4 items-center justify-center">
+                <ShareIcon size={16} />
+              </div>
               <span className="font-medium text-sm">Share</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
@@ -136,8 +136,11 @@ const PureChatItem = ({
                     <span className="font-medium text-sm">Private</span>
                   </div>
                   {visibilityType === "private" ? (
-                    <div className="h-4 w-4 flex items-center justify-center">
-                      <CheckCircleFillIcon size={16} className="text-emerald-600" />
+                    <div className="flex h-4 w-4 items-center justify-center">
+                      <CheckCircleFillIcon
+                        className="text-emerald-600"
+                        size={16}
+                      />
                     </div>
                   ) : null}
                 </DropdownMenuItem>
@@ -148,14 +151,17 @@ const PureChatItem = ({
                   }}
                 >
                   <div className="flex flex-row items-center gap-2">
-                    <div className="h-4 w-4 flex items-center justify-center text-slate-500">
+                    <div className="flex h-4 w-4 items-center justify-center text-slate-500">
                       <GlobeIcon size={16} />
                     </div>
                     <span className="font-medium text-sm">Public</span>
                   </div>
                   {visibilityType === "public" ? (
-                    <div className="h-4 w-4 flex items-center justify-center">
-                      <CheckCircleFillIcon size={16} className="text-emerald-600" />
+                    <div className="flex h-4 w-4 items-center justify-center">
+                      <CheckCircleFillIcon
+                        className="text-emerald-600"
+                        size={16}
+                      />
                     </div>
                   ) : null}
                 </DropdownMenuItem>
@@ -167,9 +173,9 @@ const PureChatItem = ({
             className="cursor-pointer rounded-lg px-3 py-2 text-red-600 transition-colors duration-200 hover:bg-red-50 focus:bg-red-50 focus:text-red-700"
             onSelect={() => onDelete(chat.id)}
           >
-            <div className="mr-2 h-4 w-4 flex items-center justify-center">
-                  <TrashIcon size={16} />
-                </div>
+            <div className="mr-2 flex h-4 w-4 items-center justify-center">
+              <TrashIcon size={16} />
+            </div>
             <span className="font-medium text-sm">Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

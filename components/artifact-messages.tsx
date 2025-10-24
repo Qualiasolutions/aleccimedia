@@ -3,6 +3,7 @@ import equal from "fast-deep-equal";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
 import { useMessages } from "@/hooks/use-messages";
+import type { BotType } from "@/lib/bot-personalities";
 import type { Vote } from "@/lib/db/schema";
 import type { ChatMessage } from "@/lib/types";
 import type { UIArtifact } from "./artifact";
@@ -17,6 +18,7 @@ type ArtifactMessagesProps = {
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
   isReadonly: boolean;
   artifactStatus: UIArtifact["status"];
+  selectedBotType: BotType;
 };
 
 function PureArtifactMessages({
@@ -27,6 +29,7 @@ function PureArtifactMessages({
   setMessages,
   regenerate,
   isReadonly,
+  selectedBotType,
 }: ArtifactMessagesProps) {
   const {
     containerRef: messagesContainerRef,
@@ -54,6 +57,7 @@ function PureArtifactMessages({
           requiresScrollPadding={
             hasSentMessage && index === messages.length - 1
           }
+          selectedBotType={selectedBotType}
           setMessages={setMessages}
           vote={
             votes
@@ -92,6 +96,9 @@ function areEqual(
     return false;
   }
   if (prevProps.status && nextProps.status) {
+    return false;
+  }
+  if (prevProps.selectedBotType !== nextProps.selectedBotType) {
     return false;
   }
   if (prevProps.messages.length !== nextProps.messages.length) {

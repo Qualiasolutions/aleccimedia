@@ -17,6 +17,7 @@ import { imageArtifact } from "@/artifacts/image/client";
 import { sheetArtifact } from "@/artifacts/sheet/client";
 import { textArtifact } from "@/artifacts/text/client";
 import { useArtifact } from "@/hooks/use-artifact";
+import type { BotType } from "@/lib/bot-personalities";
 import type { Document, Vote } from "@/lib/db/schema";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import { fetcher } from "@/lib/utils";
@@ -68,6 +69,7 @@ function PureArtifact({
   isReadonly,
   selectedVisibilityType,
   selectedModelId,
+  selectedBotType,
 }: {
   chatId: string;
   input: string;
@@ -84,6 +86,7 @@ function PureArtifact({
   isReadonly: boolean;
   selectedVisibilityType: VisibilityType;
   selectedModelId: string;
+  selectedBotType: BotType;
 }) {
   const { artifact, setArtifact, metadata, setMetadata } = useArtifact();
 
@@ -325,6 +328,7 @@ function PureArtifact({
                   isReadonly={isReadonly}
                   messages={messages}
                   regenerate={regenerate}
+                  selectedBotType={selectedBotType}
                   setMessages={setMessages}
                   status={status}
                   votes={votes}
@@ -387,7 +391,7 @@ function PureArtifact({
                     },
                   }
             }
-            className="fixed flex h-dvh flex-col overflow-y-scroll border-zinc-200 bg-background md:border-l dark:border-zinc-700 dark:bg-muted"
+            className="fixed flex h-dvh flex-col overflow-y-scroll border border-white/70 bg-white/95 shadow-2xl shadow-rose-200/50 backdrop-blur-xl md:border-l"
             exit={{
               opacity: 0,
               scale: 0.5,
@@ -418,19 +422,21 @@ function PureArtifact({
                   }
             }
           >
-            <div className="flex flex-row items-start justify-between p-2">
+            <div className="flex flex-row items-start justify-between border-white/60 border-b px-5 py-4">
               <div className="flex flex-row items-start gap-4">
                 <ArtifactCloseButton />
 
                 <div className="flex flex-col">
-                  <div className="font-medium">{artifact.title}</div>
+                  <div className="font-semibold text-base text-slate-800">
+                    {artifact.title}
+                  </div>
 
                   {isContentDirty ? (
-                    <div className="text-muted-foreground text-sm">
+                    <div className="font-medium text-rose-500 text-xs uppercase tracking-wide">
                       Saving changes...
                     </div>
                   ) : document ? (
-                    <div className="text-muted-foreground text-sm">
+                    <div className="font-medium text-slate-400 text-xs uppercase tracking-wide">
                       {`Updated ${formatDistance(
                         new Date(document.createdAt),
                         new Date(),
@@ -440,7 +446,7 @@ function PureArtifact({
                       )}`}
                     </div>
                   ) : (
-                    <div className="mt-2 h-3 w-32 animate-pulse rounded-md bg-muted-foreground/20" />
+                    <div className="mt-2 h-3 w-32 animate-pulse rounded-md bg-rose-100/50" />
                   )}
                 </div>
               </div>
@@ -456,7 +462,7 @@ function PureArtifact({
               />
             </div>
 
-            <div className="h-full max-w-full! items-center overflow-y-scroll bg-background dark:bg-muted">
+            <div className="h-full max-w-full! items-center overflow-y-scroll bg-white/90">
               <artifactDefinition.content
                 content={
                   isCurrentVersion
@@ -516,6 +522,9 @@ export const Artifact = memo(PureArtifact, (prevProps, nextProps) => {
     return false;
   }
   if (prevProps.input !== nextProps.input) {
+    return false;
+  }
+  if (prevProps.selectedBotType !== nextProps.selectedBotType) {
     return false;
   }
   if (!equal(prevProps.messages, nextProps.messages.length)) {

@@ -76,6 +76,14 @@ export class ArtifactPage {
     };
   }
 
+  async getRecentAssistantMessageOrThrow() {
+    const message = await this.getRecentAssistantMessage();
+    if (!message) {
+      throw new Error("No artifact assistant message found");
+    }
+    return message;
+  }
+
   async getRecentUserMessage() {
     const messageElements = await this.artifact
       .getByTestId("message-user")

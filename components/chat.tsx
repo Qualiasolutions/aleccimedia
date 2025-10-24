@@ -197,18 +197,18 @@ export function Chat({
 
         <div className="flex h-full w-full flex-col">
           {/* Chat Controls - Sticky Header */}
-          <div className="sticky top-0 z-10 flex h-[56px] sm:h-[60px] lg:h-[64px] items-center bg-gradient-to-b from-white/95 to-transparent px-2 py-1.5 sm:px-4 lg:px-6 backdrop-blur-xl transition-shadow duration-300">
+          <div className="sticky top-0 z-10 flex h-auto min-h-[52px] sm:min-h-[60px] items-center bg-gradient-to-b from-white/95 to-transparent px-2 py-2 sm:px-4 lg:px-6 backdrop-blur-xl transition-shadow duration-300">
             <div className="w-full">
-              <div className="rounded-xl sm:rounded-[18px] border border-white/60 bg-white/80 p-2 sm:p-2.5 lg:p-3 shadow-md shadow-rose-200/40 backdrop-blur-xl">
-                <div className="flex items-center justify-between gap-2 sm:gap-3">
+              <div className="rounded-xl sm:rounded-[18px] border border-white/60 bg-white/80 p-1.5 sm:p-2.5 lg:p-3 shadow-md shadow-rose-200/40 backdrop-blur-xl">
+                <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-3">
                   {/* Left side - Sidebar and controls */}
-                  <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                     <SidebarToggle />
 
                     {/* New Chat Button */}
                     {(!open || windowWidth < 768) && (
                       <Button
-                        className="hover:-translate-y-0.5 h-8 rounded-full border border-white/70 bg-white/85 px-3 font-medium text-slate-600 text-sm shadow-rose-100/40 shadow-sm transition-all duration-200 hover:bg-white hover:shadow-md"
+                        className="hover:-translate-y-0.5 h-7 sm:h-8 rounded-full border border-white/70 bg-white/85 px-2 sm:px-3 font-medium text-slate-600 text-xs sm:text-sm shadow-rose-100/40 shadow-sm transition-all duration-200 hover:bg-white hover:shadow-md"
                         onClick={() => {
                           router.push("/");
                           router.refresh();
@@ -230,7 +230,7 @@ export function Chat({
                   </div>
 
                   {/* Right side - Executive selector */}
-                  <div className="flex-1 min-w-0 max-w-[180px] sm:max-w-xs lg:max-w-md">
+                  <div className="flex-1 min-w-0 max-w-[140px] sm:max-w-xs lg:max-w-md">
                     <ExecutiveSwitch
                       onExecutiveChange={handleBotChange}
                       selectedExecutive={selectedBot}

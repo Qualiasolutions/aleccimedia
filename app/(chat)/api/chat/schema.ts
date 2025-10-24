@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { BotType } from "@/lib/bot-personalities";
 
 const textPartSchema = z.object({
   type: z.enum(["text"]),
@@ -23,6 +24,9 @@ export const postRequestBodySchema = z.object({
   }),
   selectedChatModel: z.enum(["chat-model", "chat-model-reasoning"]),
   selectedVisibilityType: z.enum(["public", "private"]),
+  selectedBotType: z
+    .enum(["alexandria", "kim", "collaborative"])
+    .default("alexandria"),
 });
 
 export type PostRequestBody = z.infer<typeof postRequestBodySchema>;

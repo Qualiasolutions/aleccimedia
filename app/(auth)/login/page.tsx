@@ -6,9 +6,28 @@ import { useSession } from "next-auth/react";
 import { useActionState, useEffect, useState } from "react";
 
 import { AuthForm } from "@/components/auth-form";
+import { AuthShell } from "@/components/auth-shell";
 import { SubmitButton } from "@/components/submit-button";
 import { toast } from "@/components/toast";
 import { type LoginActionState, login } from "../actions";
+
+const loginHighlights = [
+  {
+    title: "Executive Continuity",
+    description:
+      "Pick up every thread with Alexandria and Kim preserved exactly as you left it.",
+  },
+  {
+    title: "Faster Launch Windows",
+    description:
+      "Deploy new GTM experiments in minutes with reusable playbooks and ready-made briefs.",
+  },
+  {
+    title: "Enterprise Guardrails",
+    description:
+      "Role-based access plus tone control keeps every output on brand and on message.",
+  },
+];
 
 export default function Page() {
   const router = useRouter();
@@ -41,8 +60,7 @@ export default function Page() {
       updateSession();
       router.refresh();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.status]);
+  }, [router, state.status, updateSession]);
 
   const handleSubmit = (formData: FormData) => {
     setEmail(formData.get("email") as string);
@@ -50,28 +68,34 @@ export default function Page() {
   };
 
   return (
-    <div className="flex h-dvh w-screen items-start justify-center bg-background pt-12 md:items-center md:pt-0">
-      <div className="flex w-full max-w-md flex-col gap-12 overflow-hidden rounded-2xl">
-        <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
-          <h3 className="font-semibold text-xl dark:text-zinc-50">Sign In</h3>
-          <p className="text-gray-500 text-sm dark:text-zinc-400">
-            Use your email and password to sign in
-          </p>
-        </div>
-        <AuthForm action={handleSubmit} defaultEmail={email}>
-          <SubmitButton isSuccessful={isSuccessful}>Sign in</SubmitButton>
-          <p className="mt-4 text-center text-gray-600 text-sm dark:text-zinc-400">
-            {"Don't have an account? "}
-            <Link
-              className="font-semibold text-gray-800 hover:underline dark:text-zinc-200"
-              href="/register"
-            >
-              Sign up
-            </Link>
-            {" for free."}
-          </p>
-        </AuthForm>
+    <AuthShell
+      description="Sign in to continue orchestrating GTM experiments with Alexandria and Kim inside the secure Alecci Media workspace."
+      highlights={loginHighlights}
+      title="Welcome back to your AI executive suite"
+    >
+      <div className="space-y-2 text-center">
+        <h2 className="font-semibold text-2xl text-slate-900">Sign in</h2>
+        <p className="text-slate-500 text-sm">
+          Use your Alecci Media credentials to rejoin the live workspace.
+        </p>
       </div>
-    </div>
+      <AuthForm
+        action={handleSubmit}
+        className="px-0 sm:px-0"
+        defaultEmail={email}
+      >
+        <SubmitButton isSuccessful={isSuccessful}>Sign in</SubmitButton>
+        <p className="text-center text-slate-500 text-sm">
+          {"Don't have an account? "}
+          <Link
+            className="font-semibold text-rose-600 transition hover:text-rose-500 hover:underline"
+            href="/register"
+          >
+            Create one
+          </Link>
+          {" in minutes."}
+        </p>
+      </AuthForm>
+    </AuthShell>
   );
 }

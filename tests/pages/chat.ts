@@ -1,10 +1,19 @@
 import fs from "node:fs";
 import path from "node:path";
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 import { chatModels } from "@/lib/ai/models";
 
 const CHAT_ID_REGEX =
   /^http:\/\/localhost:3000\/chat\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+type AssistantMessage = {
+  element: Locator;
+  content: string | null;
+  reasoning: string | null;
+  toggleReasoningVisibility(): Promise<void>;
+  upvote(): Promise<void>;
+  downvote(): Promise<void>;
+};
 
 export class ChatPage {
   private readonly page: Page;
@@ -135,7 +144,7 @@ export class ChatPage {
     expect(await this.getSelectedVisibility()).toBe(chatVisibility);
   }
 
-  async getRecentAssistantMessage() {
+  async getRecentAssistantMessage(): Promise<AssistantMessage | null> {
     const messageElements = await this.page
       .getByTestId("message-assistant")
       .all();
@@ -177,7 +186,15 @@ export class ChatPage {
       async downvote() {
         await lastMessageElement.getByTestId("message-downvote").click();
       },
-    };
+    } satisfies AssistantMessage;
+  }
+
+  async getRecentAssistantMessageOrThrow(): Promise<AssistantMessage> {
+    const message = await this.getRecentAssistantMessage();
+    if (!message) {
+      throw new Error("No assistant message found");
+    }
+    return message;
   }
 
   async getRecentUserMessage() {

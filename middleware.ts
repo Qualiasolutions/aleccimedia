@@ -1,43 +1,67 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { guestRegex, isDevelopmentEnvironment } from "./lib/constants";
+import { env } from "./lib/env";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  /*
-   * Playwright starts the dev server and requires a 200 status to
-   * begin the tests, so this ensures that the tests can start
-   */
-  if (pathname.startsWith("/ping")) {
-    return new Response("pong", { status: 200 });
-  }
+  // Public routes that don't require authentication
+  const publicRoutes = [
+    "/ping",
+    "/api/health",
+    "/api/auth",
+    "/login",
+    "/register",
+    "/demo",
+    "/_next",
+    "/favicon.ico",
+    "/sitemap.xml",
+    "/robots.txt",
+  ];
 
-  if (pathname.startsWith("/api/auth")) {
+  // Check if the route is public
+  const isPublicRoute = publicRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  if (isPublicRoute) {
     return NextResponse.next();
   }
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-    secureCookie: !isDevelopmentEnvironment,
-  });
+  try {
+    // Get the authentication token
+    const token = await getToken({
+      req: request,
+      secret: env.AUTH_SECRET,
+      secureCookie: !isDevelopmentEnvironment,
+    });
 
-  if (!token) {
+    if (!token) {
+      const redirectUrl = encodeURIComponent(request.url);
+      return NextResponse.redirect(
+        new URL(`/api/auth/guest?redirectUrl=${redirectUrl}`, request.url)
+      );
+    }
+
+    const isGuest = guestRegex.test(token?.email ?? "");
+
+    // Redirect authenticated users away from auth pages
+    if (token && !isGuest && ["/login", "/register"].includes(pathname)) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    // Allow authenticated requests to proceed
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Middleware error:", error);
+
+    // If token verification fails, redirect to guest auth
     const redirectUrl = encodeURIComponent(request.url);
-
     return NextResponse.redirect(
       new URL(`/api/auth/guest?redirectUrl=${redirectUrl}`, request.url)
     );
   }
-
-  const isGuest = guestRegex.test(token?.email ?? "");
-
-  if (token && !isGuest && ["/login", "/register"].includes(pathname)) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  return NextResponse.next();
 }
 
 export const config = {
@@ -45,15 +69,14 @@ export const config = {
     "/",
     "/chat/:id",
     "/api/:path*",
-    "/login",
-    "/register",
 
     /*
      * Match all request paths except for the ones starting with:
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+     * - /login, /register, and /demo (allow access without authentication)
      */
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|login|register|demo).*)",
   ],
 };

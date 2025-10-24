@@ -13,7 +13,7 @@ test.describe("chat activity with reasoning", () => {
     await chatPage.sendUserMessage("Why is the sky blue?");
     await chatPage.isGenerationComplete();
 
-    const assistantMessage = await chatPage.getRecentAssistantMessage();
+    const assistantMessage = await chatPage.getRecentAssistantMessageOrThrow();
     expect(assistantMessage.content).toBe("It's just blue duh!");
 
     expect(assistantMessage.reasoning).toBe(
@@ -25,7 +25,7 @@ test.describe("chat activity with reasoning", () => {
     await chatPage.sendUserMessage("Why is the sky blue?");
     await chatPage.isGenerationComplete();
 
-    const assistantMessage = await chatPage.getRecentAssistantMessage();
+    const assistantMessage = await chatPage.getRecentAssistantMessageOrThrow();
     const reasoningElement =
       assistantMessage.element.getByTestId("message-reasoning");
     expect(reasoningElement).toBeVisible();
@@ -41,7 +41,7 @@ test.describe("chat activity with reasoning", () => {
     await chatPage.sendUserMessage("Why is the sky blue?");
     await chatPage.isGenerationComplete();
 
-    const assistantMessage = await chatPage.getRecentAssistantMessage();
+    const assistantMessage = await chatPage.getRecentAssistantMessageOrThrow();
     const reasoningElement =
       assistantMessage.element.getByTestId("message-reasoning");
     expect(reasoningElement).toBeVisible();
@@ -51,7 +51,8 @@ test.describe("chat activity with reasoning", () => {
     await userMessage.edit("Why is grass green?");
     await chatPage.isGenerationComplete();
 
-    const updatedAssistantMessage = await chatPage.getRecentAssistantMessage();
+    const updatedAssistantMessage =
+      await chatPage.getRecentAssistantMessageOrThrow();
 
     expect(updatedAssistantMessage.content).toBe("It's just green duh!");
 

@@ -4,6 +4,7 @@ import type { UseChatHelpers } from "@ai-sdk/react";
 import { Trigger } from "@radix-ui/react-select";
 import type { UIMessage } from "ai";
 import equal from "fast-deep-equal";
+import { motion } from "framer-motion";
 import {
   type ChangeEvent,
   type Dispatch,
@@ -43,9 +44,9 @@ import {
   StopIcon,
 } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
-import { SuggestedActions } from "./suggested-actions";
 import { Button } from "./ui/button";
 import type { VisibilityType } from "./visibility-selector";
+import { VoiceInputButton } from "./voice-input-button";
 
 function PureMultimodalInput({
   chatId,
@@ -128,6 +129,31 @@ function PureMultimodalInput({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<string[]>([]);
+  const handleVoiceTranscript = useCallback(
+    (transcript: string) => {
+      const sanitized = transcript.trim();
+      if (!sanitized) {
+        return;
+      }
+
+      startTransition(() => {
+        setInput((currentValue) => {
+          if (!currentValue) {
+            return sanitized;
+          }
+
+          const spacing = currentValue.endsWith(" ") ? "" : " ";
+          return `${currentValue}${spacing}${sanitized}`;
+        });
+      });
+
+      requestAnimationFrame(() => {
+        adjustHeight();
+        textareaRef.current?.focus();
+      });
+    },
+    [adjustHeight, setInput]
+  );
 
   const submitForm = useCallback(() => {
     window.history.replaceState({}, "", `/chat/${chatId}`);
@@ -199,6 +225,10 @@ function PureMultimodalInput({
     return myProvider.languageModel(selectedModelId);
   }, [selectedModelId]);
 
+  const promptContainerClass = className
+    ? "rounded-2xl border border-white/60 bg-white/95 p-4 shadow-lg shadow-rose-100/40 backdrop-blur"
+    : "rounded-xl border border-border bg-background p-3 shadow-xs transition-all duration-200 focus-within:border-border hover:border-muted-foreground/50";
+
   const contextProps = useMemo(
     () => ({
       usage,
@@ -233,17 +263,7 @@ function PureMultimodalInput({
   );
 
   return (
-    <div className={cn("relative flex w-full flex-col gap-4", className)}>
-      {messages.length === 0 &&
-        attachments.length === 0 &&
-        uploadQueue.length === 0 && (
-          <SuggestedActions
-            chatId={chatId}
-            selectedVisibilityType={selectedVisibilityType}
-            sendMessage={sendMessage}
-          />
-        )}
-
+    <div className={cn("relative flex w-full flex-col gap-2 sm:gap-2.5 lg:gap-3", className)}>
       <input
         className="-top-4 -left-4 pointer-events-none fixed size-0.5 opacity-0"
         multiple
@@ -254,7 +274,7 @@ function PureMultimodalInput({
       />
 
       <PromptInput
-        className="rounded-xl border border-border bg-background p-3 shadow-xs transition-all duration-200 focus-within:border-border hover:border-muted-foreground/50"
+        className={promptContainerClass}
         onSubmit={(event) => {
           event.preventDefault();
           if (status !== "ready") {
@@ -266,7 +286,7 @@ function PureMultimodalInput({
       >
         {(attachments.length > 0 || uploadQueue.length > 0) && (
           <div
-            className="flex flex-row items-end gap-2 overflow-x-scroll"
+            className="flex flex-row items-end gap-1 sm:gap-1.5 overflow-x-scroll"
             data-testid="attachments-preview"
           >
             {attachments.map((attachment) => (
@@ -297,14 +317,14 @@ function PureMultimodalInput({
             ))}
           </div>
         )}
-        <div className="flex flex-row items-start gap-1 sm:gap-2">
+        <div className="flex flex-row items-start gap-0.5 sm:gap-1 lg:gap-2">
           <PromptInputTextarea
             autoFocus
-            className="grow resize-none border-0! border-none! bg-transparent p-2 text-sm outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
+            className="grow resize-none border-0! border-none! bg-transparent p-1.5 sm:p-2 text-xs sm:text-sm outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
             data-testid="multimodal-input"
             disableAutoResize={true}
             maxHeight={200}
-            minHeight={44}
+            minHeight={38}
             onChange={handleInput}
             placeholder="Send a message..."
             ref={textareaRef}
@@ -314,11 +334,17 @@ function PureMultimodalInput({
           <Context {...contextProps} />
         </div>
         <PromptInputToolbar className="!border-top-0 border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent!">
-          <PromptInputTools className="gap-0 sm:gap-0.5">
+          <PromptInputTools className="gap-0.5 sm:gap-1">
             <AttachmentsButton
               fileInputRef={fileInputRef}
               selectedModelId={selectedModelId}
               status={status}
+            />
+            <VoiceInputButton
+              className="aspect-square h-7 sm:h-8 rounded-lg border border-transparent text-slate-500 transition-colors duration-200 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
+              disabled={status !== "ready"}
+              onTranscript={handleVoiceTranscript}
+              size="sm"
             />
             <ModelSelectorCompact
               onModelChange={onModelChange}
@@ -330,11 +356,11 @@ function PureMultimodalInput({
             <StopButton setMessages={setMessages} stop={stop} />
           ) : (
             <PromptInputSubmit
-              className="size-8 rounded-full bg-primary text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
+              className="size-8 sm:size-9 rounded-full bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-lg shadow-rose-200/50 transition-all hover:scale-[1.03] hover:shadow-rose-200/60 disabled:scale-100 disabled:bg-muted disabled:text-muted-foreground"
               disabled={!input.trim() || uploadQueue.length > 0}
               status={status}
             >
-              <ArrowUpIcon size={14} />
+              <ArrowUpIcon size={12} />
             </PromptInputSubmit>
           )}
         </PromptInputToolbar>
@@ -379,7 +405,8 @@ function PureAttachmentsButton({
 
   return (
     <Button
-      className="aspect-square h-8 rounded-lg p-1 transition-colors hover:bg-accent"
+      aria-label="Upload files"
+      className="aspect-square h-8 rounded-lg border border-transparent p-1 text-slate-500 transition-colors duration-200 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
       data-testid="attachments-button"
       disabled={status !== "ready" || isReasoningModel}
       onClick={(event) => {
@@ -403,6 +430,7 @@ function PureModelSelectorCompact({
   onModelChange?: (modelId: string) => void;
 }) {
   const [optimisticModelId, setOptimisticModelId] = useState(selectedModelId);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     setOptimisticModelId(selectedModelId);
@@ -412,8 +440,54 @@ function PureModelSelectorCompact({
     (model) => model.id === optimisticModelId
   );
 
+  const getModelIcon = (modelId: string) => {
+    switch (modelId) {
+      case "chat-model":
+        return (
+          <div className="flex h-4 w-4 items-center justify-center rounded bg-gradient-to-br from-blue-500 to-indigo-600">
+            <svg
+              className="h-2.5 w-2.5 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+              <path
+                clipRule="evenodd"
+                d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 100-12 6 6 0 000 12z"
+                fillRule="evenodd"
+              />
+            </svg>
+          </div>
+        );
+      case "chat-model-reasoning":
+        return (
+          <div className="flex h-4 w-4 items-center justify-center rounded bg-gradient-to-br from-purple-500 to-pink-600">
+            <svg
+              className="h-2.5 w-2.5 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+              <path
+                clipRule="evenodd"
+                d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h4v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                fillRule="evenodd"
+              />
+            </svg>
+          </div>
+        );
+      default:
+        return (
+          <div className="flex h-4 w-4 items-center justify-center rounded bg-gradient-to-br from-gray-500 to-gray-600">
+            <CpuIcon size={10} />
+          </div>
+        );
+    }
+  };
+
   return (
     <PromptInputModelSelect
+      onOpenChange={setIsOpen}
       onValueChange={(modelName) => {
         const model = chatModels.find((m) => m.name === modelName);
         if (model) {
@@ -424,28 +498,99 @@ function PureModelSelectorCompact({
           });
         }
       }}
+      open={isOpen}
       value={selectedModel?.name}
     >
       <Trigger
-        className="flex h-8 items-center gap-2 rounded-lg border-0 bg-background px-2 text-foreground shadow-none transition-colors hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+        className="group hover:-translate-y-0.5 flex h-9 items-center gap-2.5 rounded-xl border border-white/20 bg-gradient-to-r from-white/90 to-white/80 px-3 py-2 font-medium text-slate-700 text-sm shadow-lg backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/90 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:ring-offset-white/50"
         type="button"
       >
-        <CpuIcon size={16} />
-        <span className="hidden font-medium text-xs sm:block">
+        <div className="relative">
+          {getModelIcon(optimisticModelId)}
+          <div className="-bottom-0.5 -right-0.5 absolute">
+            <div className="h-1.5 w-1.5 rounded-full border border-white bg-emerald-500" />
+          </div>
+        </div>
+        <span className="hidden font-semibold text-slate-800 text-xs sm:block">
           {selectedModel?.name}
         </span>
-        <ChevronDownIcon size={16} />
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="text-slate-500">
+            <ChevronDownIcon size={14} />
+          </div>
+        </motion.div>
       </Trigger>
-      <PromptInputModelSelectContent className="min-w-[260px] p-0">
-        <div className="flex flex-col gap-px">
-          {chatModels.map((model) => (
-            <SelectItem key={model.id} value={model.name}>
-              <div className="truncate font-medium text-xs">{model.name}</div>
-              <div className="mt-px truncate text-[10px] text-muted-foreground leading-tight">
-                {model.description}
+      <PromptInputModelSelectContent className="min-w-[280px] max-w-[90vw] overflow-hidden rounded-2xl border-0 bg-gradient-to-br from-white/95 to-white/90 p-0 shadow-2xl shadow-rose-200/40 backdrop-blur-xl">
+        <div className="p-2">
+          <div className="mb-2 border-white/20 border-b px-3 py-2">
+            <div className="flex items-center gap-2">
+              <div className="flex h-4 w-4 items-center justify-center rounded bg-gradient-to-br from-rose-500 to-rose-600">
+                <div className="text-white">
+                  <CpuIcon size={10} />
+                </div>
               </div>
-            </SelectItem>
-          ))}
+              <span className="font-semibold text-slate-800 text-sm">
+                AI Model
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            {chatModels.map((model) => {
+              const isSelected = model.id === optimisticModelId;
+              return (
+                <SelectItem
+                  className={cn(
+                    "relative cursor-pointer rounded-xl px-3 py-3 transition-all duration-200",
+                    "border border-transparent hover:border-rose-200 hover:bg-gradient-to-r hover:from-rose-50 hover:to-rose-100",
+                    isSelected &&
+                      "border-rose-200 bg-gradient-to-r from-rose-100 to-rose-50"
+                  )}
+                  key={model.id}
+                  value={model.name}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="relative mt-0.5">
+                      {getModelIcon(model.id)}
+                      {isSelected && (
+                        <div className="-bottom-0.5 -right-0.5 absolute">
+                          <div className="h-2 w-2 rounded-full border border-white bg-emerald-500" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 font-semibold text-slate-800 text-sm">
+                        {model.name}
+                      </div>
+                      <div className="text-slate-600 text-xs leading-relaxed">
+                        {model.description}
+                      </div>
+                    </div>
+                    {isSelected && (
+                      <div className="ml-2">
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100">
+                          <svg
+                            className="h-3 w-3 text-emerald-600"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              clipRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              fillRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </SelectItem>
+              );
+            })}
+          </div>
         </div>
       </PromptInputModelSelectContent>
     </PromptInputModelSelect>
