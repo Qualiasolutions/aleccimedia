@@ -68,8 +68,7 @@ export default async function HistoryPage() {
   // Get message counts per executive by analyzing messages
   const chatStats = await Promise.all(
     chats.map(async (chat) => {
-      const { messages } = await import("@/lib/db/queries");
-      const msgs = await messages.getMessagesByChatId({ id: chat.id });
+      const msgs = await getMessagesByChatId({ id: chat.id });
       
       const botCounts = msgs.reduce((acc, msg) => {
         const botType = (msg as any).botType || "alexandria";
