@@ -70,7 +70,7 @@ export const BOT_PERSONALITIES: Record<BotType, BotPersonality> = {
     description: "Your Complete Executive Team",
     icon: "Users",
     avatar:
-      "https://i.ibb.co/39XxGyN1/Chat-GPT-Image-Oct-22-2025-04-39-58-AM.png",
+      "https://i.ibb.co/35bkJ1xR/Chat-GPT-Image-Oct-22-2025-05-59-09-PM.png",
   },
 };
 
