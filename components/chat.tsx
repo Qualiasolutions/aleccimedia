@@ -288,7 +288,7 @@ export function Chat({
                   isReadonly={isReadonly}
                   messages={messages}
                   regenerate={regenerate}
-                  selectedBotType={selectedBot}
+                  selectedBotType={activeBotTypeForStreaming}
                   selectedModelId={initialChatModel}
                   setMessages={setMessages}
                   status={status}
