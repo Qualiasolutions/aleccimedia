@@ -1,8 +1,10 @@
 "use client";
 
 import type { UseChatHelpers } from "@ai-sdk/react";
+import { Trigger } from "@radix-ui/react-select";
 import type { UIMessage } from "ai";
 import equal from "fast-deep-equal";
+import { motion } from "framer-motion";
 import {
   type ChangeEvent,
   type Dispatch,
@@ -17,6 +19,9 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { useLocalStorage, useWindowSize } from "usehooks-ts";
+import { saveChatModelAsCookie } from "@/app/(chat)/actions";
+import { SelectItem } from "@/components/ui/select";
+import { chatModels } from "@/lib/ai/models";
 import { myProvider } from "@/lib/ai/providers";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import type { AppUsage } from "@/lib/usage";
@@ -24,6 +29,8 @@ import { cn } from "@/lib/utils";
 import { Context } from "./elements/context";
 import {
   PromptInput,
+  PromptInputModelSelect,
+  PromptInputModelSelectContent,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar,
@@ -31,6 +38,8 @@ import {
 } from "./elements/prompt-input";
 import {
   ArrowUpIcon,
+  ChevronDownIcon,
+  CpuIcon,
   PaperclipIcon,
   StopIcon,
 } from "./icons";
@@ -342,6 +351,10 @@ function PureMultimodalInput({
               onTranscript={handleVoiceTranscript}
               size="sm"
             />
+            <ModelSelectorCompact
+              onModelChange={onModelChange}
+              selectedModelId={selectedModelId}
+            />
           </PromptInputTools>
 
           {status === "submitted" ? (
@@ -413,6 +426,185 @@ function PureAttachmentsButton({
 }
 
 const AttachmentsButton = memo(PureAttachmentsButton);
+
+function PureModelSelectorCompact({
+  selectedModelId,
+  onModelChange,
+}: {
+  selectedModelId: string;
+  onModelChange?: (modelId: string) => void;
+}) {
+  const [optimisticModelId, setOptimisticModelId] = useState(selectedModelId);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setOptimisticModelId(selectedModelId);
+  }, [selectedModelId]);
+
+  const selectedModel = chatModels.find(
+    (model) => model.id === optimisticModelId
+  );
+
+  const getModelIcon = (modelId: string) => {
+    switch (modelId) {
+      case "chat-model":
+        return (
+          <div className="flex h-4 w-4 items-center justify-center rounded bg-gradient-to-br from-blue-500 to-indigo-600">
+            <svg
+              className="h-2.5 w-2.5 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+              <path
+                clipRule="evenodd"
+                d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 100-12 6 6 0 000 12z"
+                fillRule="evenodd"
+              />
+            </svg>
+          </div>
+        );
+      case "chat-model-reasoning":
+        return (
+          <div className="flex h-4 w-4 items-center justify-center rounded bg-gradient-to-br from-purple-500 to-pink-600">
+            <svg
+              className="h-2.5 w-2.5 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+              <path
+                clipRule="evenodd"
+                d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h4v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                fillRule="evenodd"
+              />
+            </svg>
+          </div>
+        );
+      default:
+        return (
+          <div className="flex h-4 w-4 items-center justify-center rounded bg-gradient-to-br from-gray-500 to-gray-600">
+            <CpuIcon size={10} />
+          </div>
+        );
+    }
+  };
+
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+
+  return (
+    <PromptInputModelSelect
+      onOpenChange={setIsOpen}
+      onValueChange={(modelName) => {
+        const model = chatModels.find((m) => m.name === modelName);
+        if (model) {
+          setOptimisticModelId(model.id);
+          onModelChange?.(model.id);
+          startTransition(() => {
+            saveChatModelAsCookie(model.id);
+          });
+        }
+      }}
+      open={isOpen}
+      value={selectedModel?.name}
+    >
+      <Trigger
+        className="group hover:-translate-y-0.5 flex h-7 items-center gap-1.5 rounded-lg border border-white/20 bg-gradient-to-r from-white/90 to-white/80 px-2 py-1.5 font-medium text-[10px] text-slate-700 shadow-lg backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/90 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:ring-offset-white/50 sm:h-8 sm:gap-2 sm:rounded-xl sm:px-2.5 sm:text-xs lg:h-9 lg:px-3 lg:text-sm"
+        type="button"
+      >
+        <div className="relative">
+          {getModelIcon(optimisticModelId)}
+          <div className="-bottom-0.5 -right-0.5 absolute">
+            <div className="h-1.5 w-1.5 rounded-full border border-white bg-emerald-500" />
+          </div>
+        </div>
+        <span className="hidden font-semibold text-[10px] text-slate-800 sm:inline sm:text-xs lg:text-sm">
+          {isMobile ? selectedModel?.name.split(" ")[0] : selectedModel?.name}
+        </span>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="text-slate-500">
+            <ChevronDownIcon size={12} />
+          </div>
+        </motion.div>
+      </Trigger>
+      <PromptInputModelSelectContent className="min-w-[280px] max-w-[90vw] overflow-hidden rounded-2xl border-0 bg-gradient-to-br from-white/95 to-white/90 p-0 shadow-2xl shadow-rose-200/40 backdrop-blur-xl">
+        <div className="p-2">
+          <div className="mb-2 border-white/20 border-b px-3 py-2">
+            <div className="flex items-center gap-2">
+              <div className="flex h-4 w-4 items-center justify-center rounded bg-gradient-to-br from-rose-500 to-rose-600">
+                <div className="text-white">
+                  <CpuIcon size={10} />
+                </div>
+              </div>
+              <span className="font-semibold text-slate-800 text-sm">
+                AI Model
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            {chatModels.map((model) => {
+              const isSelected = model.id === optimisticModelId;
+              return (
+                <SelectItem
+                  className={cn(
+                    "relative cursor-pointer rounded-xl px-3 py-3 transition-all duration-200",
+                    "border border-transparent hover:border-rose-200 hover:bg-gradient-to-r hover:from-rose-50 hover:to-rose-100",
+                    isSelected &&
+                      "border-rose-200 bg-gradient-to-r from-rose-100 to-rose-50"
+                  )}
+                  key={model.id}
+                  value={model.name}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="relative mt-0.5">
+                      {getModelIcon(model.id)}
+                      {isSelected && (
+                        <div className="-bottom-0.5 -right-0.5 absolute">
+                          <div className="h-2 w-2 rounded-full border border-white bg-emerald-500" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 font-semibold text-slate-800 text-sm">
+                        {model.name}
+                      </div>
+                      <div className="text-slate-600 text-xs leading-relaxed">
+                        {model.description}
+                      </div>
+                    </div>
+                    {isSelected && (
+                      <div className="ml-2">
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100">
+                          <svg
+                            className="h-3 w-3 text-emerald-600"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              clipRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              fillRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </SelectItem>
+              );
+            })}
+          </div>
+        </div>
+      </PromptInputModelSelectContent>
+    </PromptInputModelSelect>
+  );
+}
+
+const ModelSelectorCompact = memo(PureModelSelectorCompact);
 
 function PureStopButton({
   stop,
