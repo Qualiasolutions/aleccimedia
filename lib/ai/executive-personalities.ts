@@ -31,7 +31,7 @@ export const EXECUTIVE_PERSONALITIES: Record<
     description:
       "Sales strategist who optimizes pipelines, revenue operations, and enterprise growth.",
     gradient: "linear-gradient(to bottom right, #b91c1c, #7f1d1d)",
-    modelId: "chat-model-reasoning",
+    modelId: "chat-model",
   },
   collaborative: {
     id: "collaborative",
