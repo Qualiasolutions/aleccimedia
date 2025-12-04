@@ -1,6 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  clearAudioUrl,
+  markAudioEnded,
+  setAbortController,
+  setCurrentAudio,
+  stopAllAudio,
+  subscribeToAudioChanges,
+} from "@/lib/audio-manager";
 import type { BotType } from "@/lib/bot-personalities";
 import type { ChatMessage } from "@/lib/types";
 
@@ -23,36 +31,44 @@ export const useAutoSpeak = ({
 }) => {
   const [state, setState] = useState<AutoSpeakState>("idle");
   const [isAutoSpeakEnabled, setIsAutoSpeakEnabled] = useState(enabled);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
   const lastSpokenMessageIdRef = useRef<string | null>(null);
   const wasStreamingRef = useRef(false);
+  const currentPlayIdRef = useRef<string | null>(null);
+
+  // Subscribe to global audio state changes
+  useEffect(() => {
+    const unsubscribe = subscribeToAudioChanges((isPlaying, source) => {
+      // If audio stopped and we were playing, reset our state
+      if (!isPlaying && currentPlayIdRef.current !== null) {
+        currentPlayIdRef.current = null;
+        setState("idle");
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   const stop = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      audioRef.current = null;
-    }
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
-    }
+    currentPlayIdRef.current = null;
+    stopAllAudio();
     setState("idle");
   }, []);
 
   const speak = useCallback(
     async (text: string, messageBotType: BotType) => {
-      stop();
+      // Stop any currently playing audio globally
+      stopAllAudio();
 
       if (!text.trim()) {
         return;
       }
 
+      const playId = `auto-${Date.now()}-${Math.random()}`;
+      currentPlayIdRef.current = playId;
+
       setState("loading");
 
       const abortController = new AbortController();
-      abortControllerRef.current = abortController;
+      setAbortController(abortController);
 
       try {
         const response = await fetch("/api/voice", {
@@ -64,6 +80,10 @@ export const useAutoSpeak = ({
           signal: abortController.signal,
         });
 
+        if (currentPlayIdRef.current !== playId) {
+          return;
+        }
+
         if (!response.ok) {
           throw new Error("Failed to generate voice");
         }
@@ -71,30 +91,51 @@ export const useAutoSpeak = ({
         const audioBlob = await response.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
 
+        if (currentPlayIdRef.current !== playId) {
+          URL.revokeObjectURL(audioUrl);
+          return;
+        }
+
         const audio = new Audio(audioUrl);
-        audioRef.current = audio;
 
         audio.addEventListener("ended", () => {
-          setState("idle");
-          URL.revokeObjectURL(audioUrl);
+          if (currentPlayIdRef.current === playId) {
+            setState("idle");
+            currentPlayIdRef.current = null;
+            markAudioEnded();
+          }
+          clearAudioUrl(audioUrl);
         });
 
         audio.addEventListener("error", () => {
-          setState("error");
-          URL.revokeObjectURL(audioUrl);
+          if (currentPlayIdRef.current === playId) {
+            setState("error");
+            currentPlayIdRef.current = null;
+            markAudioEnded();
+          }
+          clearAudioUrl(audioUrl);
         });
+
+        // Register with global audio manager
+        setCurrentAudio(audio, audioUrl, "auto-speak");
 
         setState("playing");
         await audio.play();
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {
-          setState("idle");
+          if (currentPlayIdRef.current === playId) {
+            setState("idle");
+            currentPlayIdRef.current = null;
+          }
           return;
         }
-        setState("error");
+        if (currentPlayIdRef.current === playId) {
+          setState("error");
+          currentPlayIdRef.current = null;
+        }
       }
     },
-    [stop]
+    []
   );
 
   // Track when streaming starts
