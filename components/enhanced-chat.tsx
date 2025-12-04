@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { BotType } from "@/lib/bot-personalities";
@@ -18,6 +18,19 @@ interface EnhancedChatProps {
 type MessageLike = {
   content?: unknown;
   parts?: Array<{ type?: string; text?: unknown }>;
+};
+
+const getMessageContent = (message: MessageLike) => {
+  if (typeof message.content === "string") {
+    return message.content;
+  }
+  if (Array.isArray(message.parts)) {
+    return message.parts
+      .filter((part) => part?.type === "text" && typeof part?.text === "string")
+      .map((part) => part.text as string)
+      .join("\n\n");
+  }
+  return "";
 };
 
 export function EnhancedChat({
@@ -40,37 +53,48 @@ export function EnhancedChat({
     onBotTypeChange?.(selectedBotType);
   }, [selectedBotType, onBotTypeChange]);
 
-  const handleExecutiveChange = (executive: BotType) => {
-    setSelectedBotType(executive);
-    onBotTypeChange?.(executive);
-  };
+  const handleExecutiveChange = useCallback(
+    (executive: BotType) => {
+      setSelectedBotType(executive);
+      onBotTypeChange?.(executive);
+    },
+    [onBotTypeChange]
+  );
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
-
-    sendMessage(
-      {
-        role: "user",
-        parts: [{ type: "text", text: input }],
-      },
-      {
-        body: {
-          selectedBotType,
-          selectedChatModel:
-            selectedBotType === "kim" ? "chat-model-reasoning" : "chat-model",
-        },
-      }
-    );
-    setInput("");
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+  const onSubmit = useCallback(
+    (e: React.FormEvent) => {
       e.preventDefault();
-      onSubmit(e);
-    }
-  };
+      if (!input.trim() || isLoading) {
+        return;
+      }
+
+      sendMessage(
+        {
+          role: "user",
+          parts: [{ type: "text", text: input }],
+        },
+        {
+          body: {
+            selectedBotType,
+            selectedChatModel:
+              selectedBotType === "kim" ? "chat-model-reasoning" : "chat-model",
+          },
+        }
+      );
+      setInput("");
+    },
+    [input, isLoading, sendMessage, selectedBotType]
+  );
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        onSubmit(e);
+      }
+    },
+    [onSubmit]
+  );
 
   // Auto-resize textarea
   useEffect(() => {
@@ -79,21 +103,6 @@ export function EnhancedChat({
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [input]);
-
-  const getMessageContent = (message: MessageLike) => {
-    if (typeof message.content === "string") {
-      return message.content;
-    }
-    if (Array.isArray(message.parts)) {
-      return message.parts
-        .filter(
-          (part) => part?.type === "text" && typeof part?.text === "string"
-        )
-        .map((part) => part.text as string)
-        .join("\n\n");
-    }
-    return "";
-  };
 
   return (
     <div className="flex h-full flex-col">
@@ -113,7 +122,7 @@ export function EnhancedChat({
         <div className="mx-auto max-w-4xl space-y-4">
           {messages.map((message, index) => (
             <EnhancedChatMessage
-              botType={selectedBotType}
+              botType={(message as any).metadata?.botType ?? selectedBotType}
               content={getMessageContent(message)}
               isTyping={
                 isLoading &&

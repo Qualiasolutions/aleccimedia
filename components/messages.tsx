@@ -74,7 +74,7 @@ function PureMessages({
       ref={messagesContainerRef}
       style={{ overflowAnchor: "none" }}
     >
-      <Conversation className="mx-auto flex h-full min-w-0 max-w-4xl flex-col gap-6 px-4 py-8 md:px-6">
+      <Conversation className="flex h-full w-full min-w-0 flex-col gap-4 px-4 py-6 sm:gap-6 sm:px-6 sm:py-8">
         <ConversationContent className="flex flex-col gap-5 px-1 py-2 md:gap-7">
           {messages.length === 0 && <Greeting />}
 
@@ -102,7 +102,9 @@ function PureMessages({
           ))}
 
           <AnimatePresence mode="wait">
-            {status === "submitted" && <ThinkingMessage botType={selectedBotType} key="thinking" />}
+            {status === "submitted" && (
+              <ThinkingMessage botType={selectedBotType} key="thinking" />
+            )}
           </AnimatePresence>
 
           <div
@@ -116,7 +118,7 @@ function PureMessages({
         <div className="pointer-events-none absolute right-0 bottom-36 left-0 z-10 flex justify-center">
           <button
             aria-label="Scroll to bottom"
-            className="hover:-translate-y-0.5 pointer-events-auto inline-flex items-center justify-center gap-2 rounded-full border border-white/60 bg-white/90 px-4 py-2 font-semibold text-rose-600 text-xs uppercase tracking-wide shadow-lg shadow-rose-200/40 backdrop-blur transition-all hover:bg-white"
+            className="hover:-translate-y-0.5 pointer-events-auto inline-flex items-center justify-center gap-2 rounded-full border border-stone-200 bg-white/95 px-4 py-2 font-medium text-stone-700 text-xs shadow-md backdrop-blur-sm transition-all hover:bg-white hover:shadow-lg"
             onClick={() => scrollToBottom("smooth")}
             type="button"
           >

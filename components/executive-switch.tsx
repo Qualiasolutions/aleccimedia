@@ -18,6 +18,103 @@ interface ExecutiveSwitchProps {
   disabled?: boolean;
 }
 
+const getExecutiveIcon = (
+  executive: BotType,
+  size: "sm" | "md" | "lg" = "md"
+) => {
+  const personality = BOT_PERSONALITIES[executive];
+  const sizeClasses = {
+    sm: "size-6",
+    md: "size-10",
+    lg: "size-16",
+  };
+  const iconSizes = {
+    sm: "h-3 w-3",
+    md: "h-5 w-5",
+    lg: "h-6 w-6",
+  };
+
+  const iconClass = cn(
+    "overflow-hidden rounded-full border-2 border-white/50 shadow-lg transition-all duration-300",
+    sizeClasses[size]
+  );
+
+  // If avatar exists, use it
+  if (personality.avatar) {
+    return (
+      <motion.div
+        className={iconClass}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <Image
+          alt={`${personality.name} avatar`}
+          className="size-full object-cover"
+          height={size === "sm" ? 24 : size === "md" ? 40 : 64}
+          src={personality.avatar}
+          width={size === "sm" ? 24 : size === "md" ? 40 : 64}
+        />
+      </motion.div>
+    );
+  }
+
+  // Fallback to icons if no avatar
+  switch (personality.icon) {
+    case "Crown":
+      return (
+        <motion.div
+          className={cn(
+            iconClass,
+            "flex items-center justify-center bg-gradient-to-br from-rose-400 to-red-600 text-white"
+          )}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Crown className={iconSizes[size]} />
+        </motion.div>
+      );
+    case "UserRound":
+      return (
+        <motion.div
+          className={cn(
+            iconClass,
+            "flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-700 text-white"
+          )}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <UserRound className={iconSizes[size]} />
+        </motion.div>
+      );
+    case "Users":
+      return (
+        <motion.div
+          className={cn(
+            iconClass,
+            "flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-700 text-white"
+          )}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Users className={iconSizes[size]} />
+        </motion.div>
+      );
+    default:
+      return (
+        <motion.div
+          className={cn(
+            iconClass,
+            "flex items-center justify-center bg-gradient-to-br from-gray-500 to-gray-700 text-white"
+          )}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <UserRound className={iconSizes[size]} />
+        </motion.div>
+      );
+  }
+};
+
 export function ExecutiveSwitch({
   selectedExecutive,
   onExecutiveChange,
@@ -60,172 +157,64 @@ export function ExecutiveSwitch({
     ([key]) => key !== selectedExecutive
   );
 
-  const getExecutiveIcon = (
-    executive: BotType,
-    size: "sm" | "md" | "lg" = "md"
-  ) => {
-    const personality = BOT_PERSONALITIES[executive];
-    const sizeClasses = {
-      sm: "size-6",
-      md: "size-10",
-      lg: "size-16",
-    };
-    const iconSizes = {
-      sm: "h-3 w-3",
-      md: "h-5 w-5",
-      lg: "h-6 w-6",
-    };
-
-    const iconClass = cn(
-      "overflow-hidden rounded-full border-2 border-white/50 shadow-lg transition-all duration-300",
-      sizeClasses[size]
-    );
-
-    // If avatar exists, use it
-    if (personality.avatar) {
-      return (
-        <motion.div
-          className={iconClass}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Image
-            alt={`${personality.name} avatar`}
-            className="size-full object-cover"
-            height={size === "sm" ? 24 : size === "md" ? 40 : 64}
-            src={personality.avatar}
-            width={size === "sm" ? 24 : size === "md" ? 40 : 64}
-          />
-        </motion.div>
-      );
-    }
-
-    // Fallback to icons if no avatar
-    switch (personality.icon) {
-      case "Crown":
-        return (
-          <motion.div
-            className={cn(
-              iconClass,
-              "flex items-center justify-center bg-gradient-to-br from-amber-400 to-orange-600 text-white"
-            )}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Crown className={iconSizes[size]} />
-          </motion.div>
-        );
-      case "UserRound":
-        return (
-          <motion.div
-            className={cn(
-              iconClass,
-              "flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-700 text-white"
-            )}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <UserRound className={iconSizes[size]} />
-          </motion.div>
-        );
-      case "Users":
-        return (
-          <motion.div
-            className={cn(
-              iconClass,
-              "flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-700 text-white"
-            )}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Users className={iconSizes[size]} />
-          </motion.div>
-        );
-      default:
-        return (
-          <motion.div
-            className={cn(
-              iconClass,
-              "flex items-center justify-center bg-gradient-to-br from-gray-500 to-gray-700 text-white"
-            )}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <UserRound className={iconSizes[size]} />
-          </motion.div>
-        );
-    }
-  };
-
   return (
-    <div className="relative h-full">
+    <div className="relative">
       <Button
         className={cn(
-          "group relative flex h-full w-full items-center justify-between gap-1 rounded-lg border border-white/20 bg-gradient-to-r from-white/90 to-white/80 px-1.5 py-1 text-left shadow-rose-200/20 shadow-xl backdrop-blur-md transition-all duration-300 sm:gap-2 sm:rounded-xl sm:px-3 sm:py-2 lg:gap-3 lg:px-4 lg:py-2.5",
-          "hover:-translate-y-0.5 hover:border-white/30 hover:shadow-2xl hover:shadow-rose-200/30",
-          "focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:ring-offset-white/50",
+          "group relative flex h-11 items-center gap-3 rounded-xl border-2 border-stone-200 bg-white px-4 text-left shadow-sm transition-all duration-200 sm:h-12 sm:gap-4 sm:px-5",
+          "hover:border-rose-300 hover:shadow-md",
+          "focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2",
           disabled && "cursor-not-allowed opacity-60"
         )}
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
         variant="outline"
       >
-        {/* Glassmorphism overlay */}
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/40 to-white/20 backdrop-blur-sm" />
-
-        {/* Gradient border effect */}
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-rose-400/20 via-purple-400/20 to-indigo-400/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-        <div className="relative flex w-full items-center gap-0.5 sm:gap-2 lg:gap-3">
+        <div className="flex items-center gap-3 sm:gap-4">
           <motion.div
-            animate={{ scale: 1, rotate: 0 }}
+            animate={{ scale: 1 }}
             className="flex-shrink-0"
-            initial={{ scale: 0, rotate: -180 }}
+            initial={{ scale: 0.8 }}
             key={selectedExecutive}
             transition={{ type: "spring", stiffness: 260, damping: 26 }}
           >
             {getExecutiveIcon(selectedExecutive, "sm")}
           </motion.div>
 
-          <div className="min-w-0 flex-1 overflow-hidden">
-            <div className="flex items-center">
-              <span className="truncate font-bold text-[9px] text-slate-800 leading-tight sm:text-xs">
-                {selectedPersonality.name.split(" ")[0]}
-              </span>
-            </div>
-            <span className="hidden truncate font-medium text-[8px] text-slate-500 leading-tight sm:block sm:text-[10px]">
+          <div className="flex flex-col">
+            <span className="font-semibold text-sm text-stone-800 sm:text-base">
+              {selectedPersonality.name.split(" ")[0]}
+            </span>
+            <span className="hidden text-stone-500 text-xs sm:block">
               {selectedPersonality.role.split("(")[0].trim()}
             </span>
           </div>
+        </div>
 
-          <div className="flex flex-shrink-0 items-center gap-0.5 sm:gap-1.5 lg:gap-2">
-            <Badge
-              className="hidden border-0 bg-gradient-to-r from-rose-500 to-rose-600 px-1 py-0.5 font-semibold text-[8px] text-white shadow-lg md:inline-flex md:px-2 md:text-[9px]"
-              variant="secondary"
-            >
-              Active
-            </Badge>
+        <div className="flex items-center gap-2 pl-2 sm:gap-3 sm:pl-4">
+          <span className="hidden rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-700 text-xs sm:inline-flex">
+            Active
+          </span>
 
-            <motion.div
-              animate={{ rotate: isOpen ? 180 : 0 }}
-              className="text-slate-500"
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+          <motion.div
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            className="text-stone-400"
+            transition={{ duration: 0.2 }}
+          >
+            <svg
+              className="size-4 sm:size-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <svg
-                className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M19 9l-7 7-7-7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                />
-              </svg>
-            </motion.div>
-          </div>
+              <path
+                d="M19 9l-7 7-7-7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+              />
+            </svg>
+          </motion.div>
         </div>
       </Button>
 
@@ -258,53 +247,37 @@ export function ExecutiveSwitch({
                   }}
                 >
                   {/* Modal Card */}
-                  <Card className="overflow-hidden border-0 bg-gradient-to-br from-white/98 via-white/95 to-white/98 shadow-2xl shadow-rose-300/50 backdrop-blur-xl">
+                  <Card className="overflow-hidden border border-stone-200/60 bg-white shadow-2xl shadow-stone-200/50 backdrop-blur-xl">
                     {/* Modal Header */}
-                    <div className="relative border-white/20 border-b bg-gradient-to-r from-rose-100/80 via-purple-100/80 to-indigo-100/80 px-8 py-8">
+                    <div className="relative border-rose-100/40 border-b bg-gradient-to-r from-rose-50/80 via-white to-rose-50/80 px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
                       {/* Decorative Background */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-purple-400/10 to-indigo-400/10" />
-                      <div className="absolute top-0 left-0 h-full w-32 bg-gradient-to-r from-rose-200/30 to-transparent blur-3xl" />
-                      <div className="absolute top-0 right-0 h-full w-32 bg-gradient-to-l from-indigo-200/30 to-transparent blur-3xl" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-rose-400/5 via-rose-400/10 to-rose-400/5" />
 
                       <div className="relative z-10">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="relative">
-                              <motion.div
-                                animate={{ rotate: 360 }}
-                                className="relative"
-                                transition={{
-                                  duration: 20,
-                                  repeat: Number.POSITIVE_INFINITY,
-                                  ease: "linear",
-                                }}
-                              >
-                                <Sparkles className="h-8 w-8 text-rose-500" />
-                                <div className="absolute inset-0 animate-pulse">
-                                  <div className="h-8 w-8 rounded-full bg-rose-400/30 blur-xl" />
-                                </div>
-                              </motion.div>
+                        <div className="flex items-start justify-between gap-3 sm:items-center">
+                          <div className="flex items-center gap-3 sm:gap-4">
+                            <div className="hidden sm:block">
+                              <Sparkles className="h-6 w-6 text-rose-500 sm:h-8 sm:w-8" />
                             </div>
                             <div>
-                              <h1 className="bg-gradient-to-r from-rose-700 via-purple-700 to-indigo-700 bg-clip-text font-bold text-3xl text-transparent">
+                              <h1 className="font-semibold text-lg text-stone-800 sm:text-2xl lg:text-3xl">
                                 Select Executive Advisor
                               </h1>
-                              <p className="mt-2 text-lg text-slate-600">
-                                Choose your AI consultant to guide your
-                                conversation
+                              <p className="mt-1 text-sm text-stone-500 sm:mt-2 sm:text-base">
+                                Choose your AI consultant
                               </p>
                             </div>
                           </div>
 
                           {/* Close Button */}
                           <Button
-                            className="hover:-translate-y-0.5 h-12 w-12 rounded-full border border-white/60 bg-white/80 text-slate-600 shadow-lg transition-all duration-200 hover:bg-white hover:shadow-xl"
+                            className="h-9 w-9 flex-shrink-0 rounded-full border border-rose-200 bg-white text-rose-600 shadow-sm transition-all duration-200 hover:bg-rose-50 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
                             onClick={() => setIsOpen(false)}
                             size="icon"
                             variant="outline"
                           >
                             <svg
-                              className="h-6 w-6"
+                              className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -322,26 +295,26 @@ export function ExecutiveSwitch({
                     </div>
 
                     {/* Modal Body */}
-                    <div className="p-8">
-                      <div className="grid gap-8 lg:grid-cols-2">
+                    <div className="max-h-[60vh] overflow-y-auto p-4 sm:max-h-none sm:p-6 lg:p-8">
+                      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2 lg:gap-8">
                         {/* Current Executive Section */}
-                        <div className="space-y-6">
-                          <div className="flex items-center gap-3">
-                            <div className="h-px flex-1 bg-gradient-to-r from-rose-200 to-transparent" />
+                        <div className="space-y-4 sm:space-y-6">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="h-px flex-1 bg-gradient-to-r from-stone-200 to-transparent" />
                             <div className="flex items-center gap-2">
-                              <Badge className="border-0 bg-emerald-100 px-4 py-2 font-semibold text-emerald-700 shadow-md">
-                                Currently Active
+                              <Badge className="border-0 bg-rose-100 px-2 py-1 font-semibold text-rose-700 text-xs shadow-sm sm:px-3 sm:py-1.5 sm:text-sm">
+                                Active
                               </Badge>
                               <motion.div
                                 animate={{ scale: [1, 1.1, 1] }}
-                                className="h-3 w-3 rounded-full bg-emerald-500 shadow-lg"
+                                className="h-2 w-2 rounded-full bg-rose-500 shadow sm:h-3 sm:w-3"
                                 transition={{
                                   duration: 2,
                                   repeat: Number.POSITIVE_INFINITY,
                                 }}
                               />
                             </div>
-                            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-rose-200" />
+                            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-stone-200" />
                           </div>
 
                           <motion.div
@@ -350,14 +323,14 @@ export function ExecutiveSwitch({
                             initial={{ opacity: 0, x: -20 }}
                             transition={{ duration: 0.5 }}
                           >
-                            <div className="rounded-3xl border border-rose-200/60 bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 p-8 shadow-rose-100/30 shadow-xl transition-all duration-300 hover:shadow-2xl hover:shadow-rose-200/40">
-                              <div className="flex items-center gap-6">
-                                <div className="relative">
-                                  {getExecutiveIcon(selectedExecutive, "lg")}
-                                  <div className="-bottom-2 -right-2 absolute">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 shadow-lg">
+                            <div className="rounded-2xl border border-stone-200/60 bg-gradient-to-br from-stone-50 via-white to-stone-50 p-4 shadow-sm transition-all duration-300 sm:rounded-3xl sm:p-6 lg:p-8">
+                              <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
+                                <div className="relative flex-shrink-0">
+                                  {getExecutiveIcon(selectedExecutive, "md")}
+                                  <div className="-bottom-1 -right-1 sm:-bottom-2 sm:-right-2 absolute">
+                                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 shadow sm:h-6 sm:w-6 lg:h-8 lg:w-8">
                                       <svg
-                                        className="h-4 w-4 text-white"
+                                        className="h-2.5 w-2.5 text-white sm:h-3 sm:w-3 lg:h-4 lg:w-4"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -372,14 +345,14 @@ export function ExecutiveSwitch({
                                     </div>
                                   </div>
                                 </div>
-                                <div className="flex-1">
-                                  <h3 className="font-bold text-2xl text-slate-800">
+                                <div className="min-w-0 flex-1">
+                                  <h3 className="truncate font-semibold text-base text-stone-800 sm:text-lg lg:text-2xl">
                                     {selectedPersonality.name}
                                   </h3>
-                                  <p className="mt-1 font-semibold text-lg text-slate-600">
+                                  <p className="mt-0.5 truncate font-medium text-sm text-stone-500 sm:mt-1 sm:text-base">
                                     {selectedPersonality.role}
                                   </p>
-                                  <p className="mt-3 text-slate-600 leading-relaxed">
+                                  <p className="mt-2 line-clamp-2 text-sm text-stone-600 leading-relaxed sm:mt-3 sm:line-clamp-none sm:text-base">
                                     {selectedPersonality.description}
                                   </p>
                                 </div>
@@ -389,16 +362,16 @@ export function ExecutiveSwitch({
                         </div>
 
                         {/* Other Executives Section */}
-                        <div className="space-y-6">
-                          <div className="flex items-center gap-3">
-                            <div className="h-px flex-1 bg-gradient-to-r from-indigo-200 to-transparent" />
-                            <Badge className="border-0 bg-blue-100 px-4 py-2 font-semibold text-blue-700 shadow-md">
-                              Available Advisors
+                        <div className="space-y-4 sm:space-y-6">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="h-px flex-1 bg-gradient-to-r from-stone-200 to-transparent" />
+                            <Badge className="border-0 bg-stone-100 px-2 py-1 font-semibold text-stone-600 text-xs shadow-sm sm:px-3 sm:py-1.5 sm:text-sm">
+                              Available
                             </Badge>
-                            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-indigo-200" />
+                            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-stone-200" />
                           </div>
 
-                          <div className="space-y-4">
+                          <div className="space-y-2 sm:space-y-3">
                             {otherExecutives.map(
                               ([key, personality], index) => (
                                 <motion.button
@@ -414,27 +387,24 @@ export function ExecutiveSwitch({
                                     duration: 0.4,
                                     delay: 0.1 + index * 0.1,
                                   }}
-                                  whileHover={{ scale: 1.02, y: -4 }}
-                                  whileTap={{ scale: 0.98 }}
+                                  whileHover={{ scale: 1.01, y: -2 }}
+                                  whileTap={{ scale: 0.99 }}
                                 >
-                                  <div className="rounded-2xl border border-white/40 bg-gradient-to-r from-white to-slate-50/30 p-6 shadow-lg transition-all duration-300 hover:border-indigo-200/60 hover:bg-gradient-to-br hover:from-indigo-50/30 hover:to-purple-50/30 hover:shadow-indigo-100/20 hover:shadow-xl">
-                                    <div className="flex items-center gap-4">
-                                      {getExecutiveIcon(key as BotType, "md")}
-                                      <div className="flex-1">
-                                        <h4 className="font-bold text-lg text-slate-800 transition-colors duration-300 group-hover:bg-gradient-to-r group-hover:from-indigo-600 group-hover:to-purple-600 group-hover:bg-clip-text group-hover:text-transparent">
+                                  <div className="rounded-xl border border-stone-100 bg-white p-3 shadow-sm transition-all duration-300 hover:border-rose-200 hover:bg-rose-50/30 hover:shadow-md sm:rounded-2xl sm:p-4 lg:p-6">
+                                    <div className="flex items-center gap-3 sm:gap-4">
+                                      {getExecutiveIcon(key as BotType, "sm")}
+                                      <div className="min-w-0 flex-1">
+                                        <h4 className="truncate font-semibold text-sm text-stone-800 transition-colors duration-300 group-hover:text-stone-900 sm:text-base lg:text-lg">
                                           {personality.name}
                                         </h4>
-                                        <p className="mt-1 font-medium text-slate-600">
+                                        <p className="truncate text-stone-500 text-xs sm:mt-0.5 sm:text-sm">
                                           {personality.role}
                                         </p>
-                                        <p className="mt-2 line-clamp-2 text-slate-500 text-sm leading-relaxed">
-                                          {personality.description}
-                                        </p>
                                       </div>
-                                      <div className="opacity-0 transition-all duration-300 group-hover:translate-x-2 group-hover:opacity-100">
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg">
+                                      <div className="flex-shrink-0 opacity-60 transition-all duration-300 group-hover:opacity-100">
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-100 transition-colors group-hover:bg-rose-500 sm:h-10 sm:w-10">
                                           <svg
-                                            className="h-6 w-6 text-white"
+                                            className="h-4 w-4 text-rose-500 transition-colors group-hover:text-white sm:h-5 sm:w-5"
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
@@ -457,16 +427,14 @@ export function ExecutiveSwitch({
                         </div>
                       </div>
 
-                      {/* Modal Footer */}
-                      <div className="mt-8 flex items-center justify-between border-white/20 border-t pt-6">
-                        <p className="text-slate-500 text-sm">
-                          Select an advisor to customize your AI conversation
-                          experience
+                      {/* Modal Footer - Hidden on mobile, visible on larger screens */}
+                      <div className="mt-4 hidden items-center justify-between border-rose-100 border-t pt-4 sm:mt-6 sm:flex sm:pt-6">
+                        <p className="text-sm text-stone-400">
+                          Select an advisor to customize your conversation
                         </p>
                         <Button
-                          className="h-12 rounded-full border border-slate-200 bg-white/90 px-8 font-medium text-slate-600 shadow-lg transition-all duration-200 hover:bg-slate-50 hover:text-slate-800 hover:shadow-xl"
+                          className="h-10 rounded-full border border-rose-200 bg-white px-6 font-medium text-rose-600 text-sm shadow-sm transition-all duration-200 hover:bg-rose-50"
                           onClick={() => setIsOpen(false)}
-                          size="lg"
                           variant="outline"
                         >
                           Cancel

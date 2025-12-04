@@ -1,11 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Image from "next/image";
 import { memo } from "react";
 import type { BotType } from "@/lib/bot-personalities";
 import { BOT_PERSONALITIES } from "@/lib/bot-personalities";
-import { cn } from "@/lib/utils";
 import { Response } from "./elements/response";
 
 type EnhancedChatMessageProps = {
@@ -16,9 +14,18 @@ type EnhancedChatMessageProps = {
 };
 
 const TypingIndicator = () => (
-  <span className="animate-pulse font-medium text-muted-foreground text-xs">
-    Thinking...
-  </span>
+  <div className="flex items-center gap-2">
+    <div className="flex gap-1">
+      {[0, 1, 2].map((i) => (
+        <span
+          className="size-1.5 animate-bounce rounded-full bg-rose-400"
+          key={i}
+          style={{ animationDelay: `${i * 0.15}s` }}
+        />
+      ))}
+    </div>
+    <span className="text-sm text-stone-400">Thinking...</span>
+  </div>
 );
 
 export const EnhancedChatMessage = memo(
@@ -27,7 +34,7 @@ export const EnhancedChatMessage = memo(
 
     if (role !== "assistant") {
       return (
-        <div className="ml-auto max-w-prose rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 px-4 py-3 text-sm text-white shadow-lg shadow-rose-200/40">
+        <div className="ml-auto max-w-[85%] rounded-2xl border border-stone-200 bg-gradient-to-br from-white to-stone-50 px-4 py-3 text-sm text-stone-800 shadow-sm transition-all hover:shadow-md sm:max-w-[70%]">
           {safeContent ? <Response>{safeContent}</Response> : null}
           {!safeContent && isTyping ? <TypingIndicator /> : null}
         </div>
@@ -38,62 +45,41 @@ export const EnhancedChatMessage = memo(
       BOT_PERSONALITIES[botType] ?? BOT_PERSONALITIES.alexandria;
 
     return (
-      <div className="relative flex w-full gap-2 overflow-hidden rounded-2xl border border-white/70 bg-white/95 p-3 text-xs shadow-rose-200/30 shadow-xl backdrop-blur transition-all duration-300 hover:shadow-2xl hover:shadow-rose-300/40 sm:gap-3 sm:rounded-[24px] sm:p-4 sm:text-sm lg:gap-4 lg:rounded-[28px] lg:p-5">
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-100/40 via-transparent to-amber-100/30" />
+      <div className="max-w-[85%] sm:max-w-[75%] lg:max-w-[65%]">
+        <div className="relative flex flex-col gap-3 rounded-2xl border border-stone-200 bg-gradient-to-br from-white to-stone-50/50 p-4 shadow-sm transition-all hover:shadow-md">
+          {/* Subtle executive accent line */}
+          <div className="absolute left-0 top-4 bottom-4 w-0.5 rounded-full bg-gradient-to-b from-rose-400 to-rose-600" />
 
-        {/* Avatar */}
-        {personality.avatar && (
-          <motion.div
-            animate={{ scale: 1, opacity: 1 }}
-            className="relative size-8 flex-shrink-0 sm:size-10 lg:size-12"
-            initial={{ scale: 0.8, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          >
-            <Image
-              alt={`${personality.name} avatar`}
-              className="rounded-full border-2 border-white shadow-lg ring-1 ring-rose-100/50 sm:ring-2"
-              height={48}
-              sizes="(max-width: 640px) 32px, (max-width: 1024px) 40px, 48px"
-              src={personality.avatar}
-              width={48}
-            />
-          </motion.div>
-        )}
+          {/* Header with avatar and name */}
+          <div className="flex items-center gap-3 pl-3">
+            {personality.avatar && (
+              <div className="relative">
+                <Image
+                  alt={`${personality.name} avatar`}
+                  className="size-8 rounded-full border-2 border-rose-100 shadow-sm"
+                  height={32}
+                  src={personality.avatar}
+                  width={32}
+                />
+                {/* Active indicator dot */}
+                <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-white bg-green-500" />
+              </div>
+            )}
+            <div className="flex flex-col">
+              <span className="font-semibold text-sm text-stone-800">
+                {personality.name}
+              </span>
+              <span className="text-xs text-stone-500">
+                {personality.role}
+              </span>
+            </div>
+          </div>
 
-        <div className="relative flex flex-1 flex-col gap-2 sm:gap-2.5 lg:gap-3">
-          <motion.div
-            animate={{ y: 0, opacity: 1 }}
-            className="flex flex-wrap items-center gap-1.5 sm:gap-2 lg:gap-3"
-            initial={{ y: -10, opacity: 0 }}
-            transition={{ delay: 0.1, duration: 0.3 }}
-          >
-            <motion.span
-              className={cn(
-                "inline-flex items-center gap-1 rounded-full bg-gradient-to-r px-2 py-0.5 font-semibold text-[9px] text-white uppercase tracking-[0.15em] shadow-rose-200/50 shadow-sm sm:gap-1.5 sm:px-3 sm:py-1 sm:text-[10px] sm:tracking-[0.2em] lg:gap-2 lg:px-4 lg:text-[11px]",
-                personality.color
-              )}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {personality.name}
-            </motion.span>
-            <motion.span
-              className="rounded-full bg-rose-50/80 px-2 py-0.5 font-semibold text-[9px] text-rose-600 uppercase tracking-wide shadow-rose-100/40 shadow-sm sm:px-2.5 sm:py-1 sm:text-[10px] lg:px-3 lg:text-[11px]"
-              whileHover={{ scale: 1.05 }}
-            >
-              {personality.role}
-            </motion.span>
-          </motion.div>
-
-          <motion.div
-            animate={{ opacity: 1 }}
-            className="relative text-slate-700 text-sm leading-relaxed sm:text-[0.95rem] lg:text-base"
-            initial={{ opacity: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-          >
+          {/* Message content with enhanced typography */}
+          <div className="message-text prose prose-stone max-w-none pl-3 text-stone-700 selection:bg-rose-100 selection:text-rose-900">
             {safeContent ? <Response>{safeContent}</Response> : null}
             {!safeContent && isTyping ? <TypingIndicator /> : null}
-          </motion.div>
+          </div>
         </div>
       </div>
     );

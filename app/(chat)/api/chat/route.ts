@@ -19,6 +19,7 @@ import { getUsage } from "tokenlens/helpers";
 import { auth, type UserType } from "@/app/(auth)/auth";
 import type { VisibilityType } from "@/components/visibility-selector";
 import { entitlementsByUserType } from "@/lib/ai/entitlements";
+import { getKnowledgeBaseContent } from "@/lib/ai/knowledge-base";
 import type { ChatModel } from "@/lib/ai/models";
 import { type RequestHints, systemPrompt } from "@/lib/ai/prompts";
 import { myProvider } from "@/lib/ai/providers";
@@ -109,6 +110,13 @@ export async function POST(request: Request) {
       selectedBotType: string;
     } = requestBody;
 
+    console.log("Chat API Request:", {
+      id,
+      selectedBotType,
+      selectedChatModel,
+      messageRole: message.role,
+    });
+
     const session = await auth();
 
     if (!session?.user) {
@@ -176,6 +184,8 @@ export async function POST(request: Request) {
 
     let finalMergedUsage: AppUsage | undefined;
 
+    const knowledgeBaseContent = await getKnowledgeBaseContent(selectedBotType);
+
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
         const result = streamText({
@@ -184,18 +194,16 @@ export async function POST(request: Request) {
             selectedChatModel,
             requestHints,
             botType: selectedBotType as any,
+            knowledgeBaseContent,
           }),
           messages: convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
-          experimental_activeTools:
-            selectedChatModel === "chat-model-reasoning"
-              ? []
-              : [
-                  "getWeather",
-                  "createDocument",
-                  "updateDocument",
-                  "requestSuggestions",
-                ],
+          experimental_activeTools: [
+            "getWeather",
+            "createDocument",
+            "updateDocument",
+            "requestSuggestions",
+          ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
             getWeather,
@@ -245,7 +253,6 @@ export async function POST(request: Request) {
         });
 
         result.consumeStream();
-
         dataStream.merge(
           result.toUIMessageStream({
             sendReasoning: true,
@@ -264,7 +271,7 @@ export async function POST(request: Request) {
             chatId: id,
             botType:
               currentMessage.role === "assistant"
-                ? (selectedBotType as "alexandria" | "kim" | "collaborative")
+                ? (currentMessage as any).metadata?.botType || selectedBotType
                 : null,
           })),
         });

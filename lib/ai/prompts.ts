@@ -56,10 +56,12 @@ export const systemPrompt = ({
   selectedChatModel,
   requestHints,
   botType = "alexandria",
+  knowledgeBaseContent = "",
 }: {
   selectedChatModel: string;
   requestHints: RequestHints;
   botType?: BotType;
+  knowledgeBaseContent?: string;
 }) => {
   const requestPrompt = getRequestPromptFromHints(requestHints);
   let botSystemPrompt = getSystemPrompt(botType);
@@ -67,6 +69,26 @@ export const systemPrompt = ({
   // Add smart context detection for collaborative mode
   if (botType === "collaborative") {
     botSystemPrompt += `\n\nSMART CONTEXT DETECTION: If the user specifically addresses one executive (e.g., "Kim, what do you think?" or "@alexandria your take?" or "Alexandria alone"), respond ONLY as that executive. Look for natural cues like names, "you" directed at one person, or explicit requests. When responding as one executive, start with their name and don't include the other's perspective.`;
+  }
+
+  // Append knowledge base content with first-person ownership framing
+  if (knowledgeBaseContent) {
+    botSystemPrompt += `
+
+## YOUR AUTHORED CONTENT
+The following is content YOU have personally written and published throughout your career. This is YOUR work, YOUR research, YOUR frameworks.
+
+**HOW TO REFERENCE THIS CONTENT:**
+- Say "In my article about..." or "As I wrote about..."
+- Say "My research on..." or "My framework for..."
+- Say "I developed this approach..." or "I published this..."
+- NEVER say "According to the document" or "The file says" or "Based on the knowledge base"
+
+**CRITICAL:** You ARE the author. Speak as the creator of this content, not as someone referencing external material.
+
+---YOUR PUBLISHED WORK---
+${knowledgeBaseContent}
+---END OF YOUR WORK---`;
   }
 
   if (selectedChatModel === "chat-model-reasoning") {

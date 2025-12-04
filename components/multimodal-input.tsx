@@ -26,7 +26,6 @@ import { myProvider } from "@/lib/ai/providers";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import type { AppUsage } from "@/lib/usage";
 import { cn } from "@/lib/utils";
-import { Context } from "./elements/context";
 import {
   PromptInput,
   PromptInputModelSelect,
@@ -225,16 +224,10 @@ function PureMultimodalInput({
     return myProvider.languageModel(selectedModelId);
   }, [selectedModelId]);
 
-  const promptContainerClass = className
-    ? "rounded-2xl border border-white/60 bg-white/95 p-4 shadow-lg shadow-rose-100/40 backdrop-blur"
-    : "rounded-xl border border-border bg-background p-3 shadow-xs transition-all duration-200 focus-within:border-border hover:border-muted-foreground/50";
+  // Premium glass-like input styling with layered depth
+  const promptContainerClass =
+    "rounded-2xl border border-stone-200/60 bg-white/95 p-3 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.04)] backdrop-blur-sm transition-all duration-300 focus-within:border-rose-200 focus-within:shadow-[0_4px_12px_rgba(0,0,0,0.06),0_0_0_3px_rgba(244,63,94,0.08)] sm:p-4";
 
-  const contextProps = useMemo(
-    () => ({
-      usage,
-    }),
-    [usage]
-  );
 
   const handleFileChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
@@ -322,38 +315,33 @@ function PureMultimodalInput({
             ))}
           </div>
         )}
-        <div className="flex flex-row items-start gap-0.5 sm:gap-1 lg:gap-1.5">
+        <div className="flex flex-row items-start">
           <PromptInputTextarea
             autoFocus
-            className="grow resize-none border-0! border-none! bg-transparent p-1 text-[11px] outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 sm:p-1.5 sm:text-xs lg:text-sm [&::-webkit-scrollbar]:hidden"
+            className="grow resize-none border-0! border-none! bg-transparent p-1 text-sm leading-relaxed outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-stone-400 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 sm:p-2 sm:text-base [&::-webkit-scrollbar]:hidden"
             data-testid="multimodal-input"
             disableAutoResize={true}
             maxHeight={180}
-            minHeight={32}
+            minHeight={44}
             onChange={handleInput}
-            placeholder="Send a message..."
+            placeholder="Message your executive team..."
             ref={textareaRef}
             rows={1}
             value={input}
-          />{" "}
-          <Context {...contextProps} />
+          />
         </div>
-        <PromptInputToolbar className="!border-top-0 border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent!">
-          <PromptInputTools className="gap-0.5 sm:gap-1">
+        <PromptInputToolbar className="mt-2 flex items-center justify-between border-t-0 p-0 pt-2 shadow-none">
+          <PromptInputTools className="gap-1 sm:gap-2">
             <AttachmentsButton
               fileInputRef={fileInputRef}
               selectedModelId={selectedModelId}
               status={status}
             />
             <VoiceInputButton
-              className="aspect-square h-6 rounded-lg border border-transparent text-slate-500 transition-colors duration-200 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 sm:h-7"
+              className="size-8 rounded-lg text-stone-400 transition-colors duration-200 hover:bg-stone-100 hover:text-stone-600 sm:size-9"
               disabled={status !== "ready"}
               onTranscript={handleVoiceTranscript}
               size="sm"
-            />
-            <ModelSelectorCompact
-              onModelChange={onModelChange}
-              selectedModelId={selectedModelId}
             />
           </PromptInputTools>
 
@@ -361,11 +349,11 @@ function PureMultimodalInput({
             <StopButton setMessages={setMessages} stop={stop} />
           ) : (
             <PromptInputSubmit
-              className="size-7 rounded-full bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-lg shadow-rose-200/50 transition-all hover:scale-[1.03] hover:shadow-rose-200/60 disabled:scale-100 disabled:bg-muted disabled:text-muted-foreground sm:size-8"
+              className="size-9 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-md shadow-rose-500/25 transition-all hover:from-rose-600 hover:to-rose-700 hover:shadow-lg hover:shadow-rose-500/30 disabled:from-stone-200 disabled:to-stone-300 disabled:text-stone-400 disabled:shadow-none sm:size-10"
               disabled={!input.trim() || uploadQueue.length > 0}
               status={status}
             >
-              <ArrowUpIcon size={12} />
+              <ArrowUpIcon size={16} />
             </PromptInputSubmit>
           )}
         </PromptInputToolbar>
@@ -411,7 +399,7 @@ function PureAttachmentsButton({
   return (
     <Button
       aria-label="Upload files"
-      className="aspect-square h-6 rounded-lg border border-transparent p-0.5 text-slate-500 transition-colors duration-200 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 sm:h-7 sm:p-1"
+      className="size-8 rounded-lg text-stone-400 transition-colors duration-200 hover:bg-stone-100 hover:text-stone-600 sm:size-9"
       data-testid="attachments-button"
       disabled={status !== "ready" || isReasoningModel}
       onClick={(event) => {
@@ -420,7 +408,7 @@ function PureAttachmentsButton({
       }}
       variant="ghost"
     >
-      <PaperclipIcon size={14} />
+      <PaperclipIcon size={18} />
     </Button>
   );
 }
@@ -615,7 +603,7 @@ function PureStopButton({
 }) {
   return (
     <Button
-      className="size-6 rounded-full bg-foreground p-0.5 text-background transition-colors duration-200 hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground sm:size-7 sm:p-1"
+      className="size-9 rounded-xl bg-stone-900 text-white transition-colors duration-200 hover:bg-stone-800 sm:size-10"
       data-testid="stop-button"
       onClick={(event) => {
         event.preventDefault();
@@ -623,7 +611,7 @@ function PureStopButton({
         setMessages((messages) => messages);
       }}
     >
-      <StopIcon size={14} />
+      <StopIcon size={16} />
     </Button>
   );
 }

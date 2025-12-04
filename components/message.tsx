@@ -75,32 +75,13 @@ const PurePreviewMessage = ({
           "justify-start": message.role === "assistant",
         })}
       >
-        {message.role === "assistant" && (
-          <motion.div
-            animate={{ scale: 1, rotate: 0 }}
-            className="-mt-1 flex size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 via-pink-500 to-purple-600 text-white shadow-rose-200/50 shadow-xl ring-3 ring-white/70 backdrop-blur-sm"
-            initial={{ scale: 0, rotate: -180 }}
-            transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            <SparklesIcon size={18} />
-          </motion.div>
-        )}
 
         <div
-          className={cn("flex flex-col", {
+          className={cn("flex w-full flex-col", {
             "gap-2 md:gap-4": message.parts?.some(
               (p) => p.type === "text" && p.text?.trim()
             ),
             "min-h-96": message.role === "assistant" && requiresScrollPadding,
-            "w-full":
-              (message.role === "assistant" &&
-                message.parts?.some(
-                  (p) => p.type === "text" && p.text?.trim()
-                )) ||
-              mode === "edit",
-            "max-w-[calc(100%-2.5rem)] sm:max-w-[min(fit-content,80%)]":
-              message.role === "user" && mode !== "edit",
           })}
         >
           {attachmentsFromMessage.length > 0 && (
@@ -138,98 +119,37 @@ const PurePreviewMessage = ({
             if (type === "text") {
               if (mode === "view") {
                 if (message.role === "assistant") {
-                  // Get executive-specific styling
-                  const getExecutiveStyling = () => {
-                    switch (messageBotType) {
-                      case "alexandria":
-                        return {
-                          gradient: "from-rose-50 via-pink-50/30 to-rose-50/20",
-                          border: "border-rose-200/40",
-                          shadow: "shadow-rose-200/30",
-                        };
-                      case "kim":
-                        return {
-                          gradient:
-                            "from-blue-50 via-indigo-50/30 to-blue-50/20",
-                          border: "border-blue-200/40",
-                          shadow: "shadow-blue-200/30",
-                        };
-                      case "collaborative":
-                        return {
-                          gradient:
-                            "from-rose-50 via-purple-50/30 to-indigo-50/20",
-                          border: "border-purple-200/40",
-                          shadow: "shadow-purple-200/30",
-                        };
-                      default:
-                        return {
-                          gradient: "from-white via-rose-50 to-white",
-                          border: "border-white/20",
-                          shadow: "shadow-rose-200/30",
-                        };
-                    }
-                  };
-
-                  const styling = getExecutiveStyling();
-
                   return (
                     <motion.div
-                      animate={{ opacity: 1, x: 0, y: 0 }}
+                      animate={{ opacity: 1, y: 0 }}
                       className="w-full"
-                      initial={{ opacity: 0, x: -20, y: 10 }}
+                      initial={{ opacity: 0, y: 8 }}
                       key={key}
-                      transition={{
-                        type: "spring",
-                        stiffness: 200,
-                        damping: 25,
-                      }}
+                      transition={{ duration: 0.3 }}
                     >
-                      <div className="relative">
-                        {/* Executive-specific gradient background */}
-                        <div
-                          className={cn(
-                            "absolute inset-0 rounded-3xl bg-gradient-to-br opacity-50",
-                            styling.gradient
-                          )}
-                        />
-                        <div
-                          className={cn(
-                            "relative rounded-3xl border bg-white/90 p-6 shadow-2xl backdrop-blur-xl",
-                            styling.border,
-                            styling.shadow
-                          )}
-                        >
-                          <EnhancedChatMessage
-                            botType={messageBotType}
-                            content={sanitizeText(part.text)}
-                            isTyping={isLoading}
-                            role="assistant"
-                          />
-                        </div>
-                      </div>
+                      <EnhancedChatMessage
+                        botType={messageBotType}
+                        content={sanitizeText(part.text)}
+                        isTyping={isLoading}
+                        role="assistant"
+                      />
                     </motion.div>
                   );
                 }
 
                 return (
                   <motion.div
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className="flex justify-end"
-                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex w-full justify-end"
+                    initial={{ opacity: 0, y: 8 }}
                     key={key}
-                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                    transition={{ duration: 0.3 }}
                   >
                     <MessageContent
-                      className="w-fit max-w-[min(400px,85vw)] break-words rounded-[28px] border border-white/10 bg-gradient-to-r from-slate-800 to-slate-900 px-5 py-4 text-right text-sm text-white shadow-2xl shadow-slate-900/40 backdrop-blur-sm"
+                      className="max-w-[85%] break-words rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-800 shadow-sm sm:max-w-[70%] sm:px-5 sm:py-4"
                       data-testid="message-content"
                     >
-                      <div className="relative">
-                        {/* Gradient overlay */}
-                        <div className="absolute inset-0 rounded-[28px] bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 opacity-0 transition-opacity duration-300 hover:opacity-100" />
-                        <Response className="relative">
-                          {sanitizeText(part.text)}
-                        </Response>
-                      </div>
+                      <Response>{sanitizeText(part.text)}</Response>
                     </MessageContent>
                   </motion.div>
                 );
@@ -363,6 +283,7 @@ const PurePreviewMessage = ({
 
           {!isReadonly && (
             <MessageActions
+              botType={messageBotType as BotType}
               chatId={chatId}
               isLoading={isLoading}
               key={`action-${message.id}`}
@@ -395,8 +316,16 @@ export const PreviewMessage = memo(
     if (!equal(prevProps.vote, nextProps.vote)) {
       return false;
     }
+    // Only re-render for selectedBotType change if message doesn't have its own botType stored
+    // This prevents old messages from changing their executive display when user switches
+    if (
+      !prevProps.message.metadata?.botType &&
+      prevProps.selectedBotType !== nextProps.selectedBotType
+    ) {
+      return false;
+    }
 
-    return false;
+    return true;
   }
 );
 
@@ -409,73 +338,57 @@ export const ThinkingMessage = ({
   const personality =
     BOT_PERSONALITIES[botType] ?? BOT_PERSONALITIES.alexandria;
 
-  const getThinkingText = () => {
-    switch (botType) {
-      case "alexandria":
-        return "Alexandria is crafting a strategy...";
-      case "kim":
-        return "Kim is analyzing...";
-      case "collaborative":
-        return "Alexandria & Kim are collaborating...";
-      default:
-        return "Thinking...";
-    }
-  };
-
   return (
     <motion.div
       animate={{ opacity: 1, y: 0 }}
       className="group/message w-full"
       data-role={role}
       data-testid="message-assistant-loading"
-      exit={{ opacity: 0, y: -10, transition: { duration: 0.3 } }}
+      exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }}
       initial={{ opacity: 0, y: 10 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      transition={{ duration: 0.3 }}
     >
-      <div className="flex items-start justify-start gap-3 sm:gap-4">
-        <motion.div
-          animate={{ scale: [1, 1.1, 1] }}
-          className="-mt-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 via-pink-500 to-purple-600 text-white shadow-lg shadow-rose-200/50 ring-2 ring-white/70 sm:size-12"
-          transition={{
-            duration: botType === "kim" ? 1.2 : 1.8,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-        >
-          <SparklesIcon size={16} />
-        </motion.div>
-
-        <div className="flex w-full flex-col gap-2 sm:gap-3">
-          <motion.div
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            className="rounded-xl border border-white/20 bg-gradient-to-r from-white/90 to-white/80 px-4 py-3 shadow-lg backdrop-blur-sm sm:rounded-2xl sm:px-5 sm:py-4"
-            transition={{
-              duration: botType === "kim" ? 1.2 : 1.8,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          >
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="flex gap-1">
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    animate={{ y: [0, -8, 0] }}
-                    className="h-1.5 w-1.5 rounded-full bg-gradient-to-r from-rose-500 to-purple-600 sm:h-2 sm:w-2"
-                    key={i}
-                    transition={{
-                      duration: botType === "kim" ? 0.6 : 0.8,
-                      repeat: Number.POSITIVE_INFINITY,
-                      ease: "easeInOut",
-                      delay: i * 0.15,
-                    }}
-                  />
-                ))}
-              </div>
-              <span className="font-medium text-slate-600 text-xs sm:text-sm">
-                {getThinkingText()}
-              </span>
+      <div className="max-w-[85%] sm:max-w-[75%] lg:max-w-[65%]">
+        <div className="flex items-center gap-3 rounded-2xl border border-stone-200 bg-gradient-to-br from-white to-stone-50/50 px-4 py-3 shadow-sm">
+          {/* Avatar with pulse ring */}
+          {personality.avatar && (
+            <div className="relative">
+              <motion.div
+                animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.2, 0.5] }}
+                className="absolute inset-0 rounded-full bg-rose-400"
+                transition={{
+                  duration: 1.5,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                }}
+              />
+              <img
+                alt={`${personality.name} avatar`}
+                className="relative size-7 rounded-full border-2 border-rose-100"
+                src={personality.avatar}
+              />
             </div>
-          </motion.div>
+          )}
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1">
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  animate={{ opacity: [0.4, 1, 0.4], scale: [0.85, 1, 0.85] }}
+                  className="size-1.5 rounded-full bg-rose-500"
+                  key={i}
+                  transition={{
+                    duration: 1,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: "easeInOut",
+                    delay: i * 0.2,
+                  }}
+                />
+              ))}
+            </div>
+            <span className="text-sm text-stone-600">
+              {personality.name} is thinking...
+            </span>
+          </div>
         </div>
       </div>
     </motion.div>

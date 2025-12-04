@@ -45,20 +45,19 @@ export function BotSelector({
   showIntro = true,
 }: BotSelectorProps) {
   return (
-    <div className={cn("mx-auto w-full max-w-5xl p-6", className)}>
+    <div className={cn("mx-auto w-full max-w-5xl p-3 sm:p-4 lg:p-6", className)}>
       {showIntro ? (
         <motion.div
           animate={{ opacity: 1, y: 0 }}
-          className="mb-10 text-center"
+          className="mb-6 text-center sm:mb-8 lg:mb-10"
           initial={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="font-semibold text-3xl text-slate-900 tracking-tight sm:text-4xl">
+          <h2 className="font-semibold text-xl text-stone-900 tracking-tight sm:text-2xl lg:text-3xl">
             Choose your AI executive consultant
           </h2>
-          <p className="mt-3 text-base text-slate-500">
-            Switch between Alexandria, Kim, or the full executive council to
-            tailor every session to marketing, sales, or integrated growth.
+          <p className="mt-2 text-sm text-stone-500 sm:mt-3 sm:text-base">
+            Switch between Alexandria, Kim, or both for integrated insights.
           </p>
         </motion.div>
       ) : null}
@@ -68,26 +67,27 @@ export function BotSelector({
         onValueChange={(value) => onBotSelect(value as BotType)}
         value={selectedBot}
       >
-        <TabsList className="grid w-full grid-cols-1 gap-2 rounded-2xl border border-rose-100 bg-white p-2 shadow-inner shadow-rose-200/40 sm:h-16 sm:grid-cols-3">
+        <TabsList className="grid h-auto w-full grid-cols-3 gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1 sm:gap-2 sm:rounded-2xl sm:p-2">
           <TabsTrigger
-            className="flex w-full items-center justify-center gap-3 rounded-xl px-4 py-3 font-semibold text-slate-500 text-sm transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-500 data-[state=active]:to-rose-600 data-[state=active]:text-white data-[state=active]:shadow-lg"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg px-2 py-2.5 font-medium text-stone-500 text-xs transition-all duration-300 data-[state=active]:bg-stone-900 data-[state=active]:text-white data-[state=active]:shadow-sm sm:gap-2 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm"
             value="alexandria"
           >
-            <Crown className="h-5 w-5" />
-            Alexandria
+            <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden xs:inline sm:inline">Alexandria</span>
+            <span className="xs:hidden">Alex</span>
           </TabsTrigger>
           <TabsTrigger
-            className="flex w-full items-center justify-center gap-3 rounded-xl px-4 py-3 font-semibold text-slate-500 text-sm transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-500 data-[state=active]:to-rose-600 data-[state=active]:text-white data-[state=active]:shadow-lg"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg px-2 py-2.5 font-medium text-stone-500 text-xs transition-all duration-300 data-[state=active]:bg-stone-900 data-[state=active]:text-white data-[state=active]:shadow-sm sm:gap-2 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm"
             value="kim"
           >
-            <UserRound className="h-5 w-5" />
+            <UserRound className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             Kim
           </TabsTrigger>
           <TabsTrigger
-            className="flex w-full items-center justify-center gap-3 rounded-xl px-4 py-3 font-semibold text-slate-500 text-sm transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-500 data-[state=active]:to-rose-600 data-[state=active]:text-white data-[state=active]:shadow-lg"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg px-2 py-2.5 font-medium text-stone-500 text-xs transition-all duration-300 data-[state=active]:bg-stone-900 data-[state=active]:text-white data-[state=active]:shadow-sm sm:gap-2 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm"
             value="collaborative"
           >
-            <Users className="h-5 w-5" />
+            <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             Both
           </TabsTrigger>
         </TabsList>

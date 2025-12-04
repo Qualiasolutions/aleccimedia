@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import useSWR, { useSWRConfig } from "swr";
 import { unstable_serialize } from "swr/infinite";
 import { useWindowSize } from "usehooks-ts";
+import { AutoSpeakToggle } from "@/components/auto-speak-toggle";
 import { ExecutiveSwitch } from "@/components/executive-switch";
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import {
@@ -22,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useArtifactSelector } from "@/hooks/use-artifact";
 import { useAutoResume } from "@/hooks/use-auto-resume";
+import { useAutoSpeak } from "@/hooks/use-auto-speak";
 import { useChatVisibility } from "@/hooks/use-chat-visibility";
 import { BOT_PERSONALITIES, type BotType } from "@/lib/bot-personalities";
 import type { Vote } from "@/lib/db/schema";
@@ -103,7 +105,8 @@ export function Chat({
 
   // Track the botType that was active when the last message was sent
   // This ensures assistant responses show the correct executive even during streaming
-  const [activeBotTypeForStreaming, setActiveBotTypeForStreaming] = useState<BotType>(initialBotType);
+  const [activeBotTypeForStreaming, setActiveBotTypeForStreaming] =
+    useState<BotType>(initialBotType);
 
   const {
     messages,
@@ -123,7 +126,7 @@ export function Chat({
       fetch: fetchWithErrorHandlers,
       prepareSendMessagesRequest: (request) => {
         // Capture the current bot type at the exact moment of sending
-        const currentBotType = selectedBot;
+        const currentBotType = selectedBotRef.current;
         // Store this for use during streaming
         setActiveBotTypeForStreaming(currentBotType);
         return {
@@ -216,11 +219,28 @@ export function Chat({
     setMessages,
   });
 
+  // Auto-speak functionality - speaks assistant responses when streaming completes
+  const {
+    isAutoSpeakEnabled,
+    toggleAutoSpeak,
+    stop: stopSpeaking,
+    isLoading: isSpeakLoading,
+    isPlaying: isSpeakPlaying,
+  } = useAutoSpeak({
+    messages,
+    status,
+    botType: activeBotTypeForStreaming,
+    enabled: true, // Enabled by default
+  });
+
   return (
     <>
       <div className="relative flex h-screen w-full flex-col overflow-hidden bg-gradient-to-b from-stone-50 via-white to-stone-50/80">
         {/* Subtle ambient gradient orbs */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 overflow-hidden"
+        >
           <div className="absolute top-0 left-1/4 h-[600px] w-[600px] rounded-full bg-rose-100/30 blur-[120px]" />
           <div className="absolute top-1/3 right-0 h-[500px] w-[500px] rounded-full bg-amber-50/40 blur-[100px]" />
         </div>
@@ -232,12 +252,10 @@ export function Chat({
               {/* Left: Brand + Navigation */}
               <div className="flex items-center gap-3 sm:gap-4">
                 <SidebarToggle />
-                <div className="hidden items-center gap-2 sm:flex">
-
-                </div>
+                <div className="hidden items-center gap-2 sm:flex" />
                 {(!open || windowWidth < 768) && (
                   <Button
-                    className="h-9 gap-2 rounded-lg border-stone-200 bg-white px-3 font-medium text-stone-600 text-sm shadow-sm transition-all hover:border-stone-300 hover:bg-stone-50"
+                    className="h-9 gap-2 rounded-lg border-stone-200 bg-white px-3 font-medium text-sm text-stone-600 shadow-sm transition-all hover:border-stone-300 hover:bg-stone-50"
                     onClick={() => {
                       router.push("/");
                       router.refresh();
@@ -258,8 +276,15 @@ export function Chat({
                 />
               </div>
 
-              {/* Right: Visibility */}
+              {/* Right: Voice & Visibility */}
               <div className="flex items-center gap-2">
+                <AutoSpeakToggle
+                  isEnabled={isAutoSpeakEnabled}
+                  isLoading={isSpeakLoading}
+                  isPlaying={isSpeakPlaying}
+                  onStop={stopSpeaking}
+                  onToggle={toggleAutoSpeak}
+                />
                 {!isReadonly && (
                   <VisibilitySelector
                     chatId={id}

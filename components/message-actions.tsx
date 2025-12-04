@@ -3,10 +3,12 @@ import { memo } from "react";
 import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 import { useCopyToClipboard } from "usehooks-ts";
+import type { BotType } from "@/lib/bot-personalities";
 import type { Vote } from "@/lib/db/schema";
 import type { ChatMessage } from "@/lib/types";
 import { Action, Actions } from "./elements/actions";
 import { CopyIcon, PencilEditIcon, ThumbDownIcon, ThumbUpIcon } from "./icons";
+import { VoicePlayerButton } from "./voice-player-button";
 
 export function PureMessageActions({
   chatId,
@@ -14,12 +16,14 @@ export function PureMessageActions({
   vote,
   isLoading,
   setMode,
+  botType = "alexandria",
 }: {
   chatId: string;
   message: ChatMessage;
   vote: Vote | undefined;
   isLoading: boolean;
   setMode?: (mode: "view" | "edit") => void;
+  botType?: BotType;
 }) {
   const { mutate } = useSWRConfig();
   const [_, copyToClipboard] = useCopyToClipboard();
@@ -71,6 +75,14 @@ export function PureMessageActions({
       <Action onClick={handleCopy} tooltip="Copy">
         <CopyIcon />
       </Action>
+
+      {textFromParts && (
+        <VoicePlayerButton
+          text={textFromParts}
+          botType={botType}
+          className="h-8 w-8"
+        />
+      )}
 
       <Action
         data-testid="message-upvote"
