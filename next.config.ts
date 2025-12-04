@@ -31,25 +31,6 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
-  // Allow iframe embedding from Squarespace and common domains
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          {
-            key: "X-Frame-Options",
-            value: "ALLOWALL",
-          },
-          {
-            key: "Content-Security-Policy",
-            value:
-              "frame-ancestors 'self' https://*.squarespace.com https://*.aleccimedia.com https://aleccimedia.com https://*.vercel.app http://localhost:*",
-          },
-        ],
-      },
-    ];
-  },
 };
 
 export default nextConfig;
